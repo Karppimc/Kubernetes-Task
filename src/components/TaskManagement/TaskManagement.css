@@ -1,0 +1,67 @@
+/* TaskManagement.css */
+.management-main {
+  padding: 20px;
+}
+
+.management-form-section,
+.task-list-section {
+  margin-bottom: 30px;
+}
+
+/* Centering the form elements */
+.management-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* Adjust label styling with a fixed width */
+.management-label {
+  font-weight: bold;
+  width: 100px; 
+}
+
+/* Input field to take up available space */
+.management-input {
+  flex: 1;
+  padding: 8px;
+  min-width: 0; /* Prevent the input from overflowing */
+}
+
+/* Button for adding tasks */
+.management-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.management-button:hover {
+  background-color: #555;
+}
+
+/* Task list styles */
+.management-task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.management-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 15px;
+  background-color: #414040;
+  border-radius: 8px;
+}
+
+/* Align buttons in the task list */
+.button-group {
+  display: flex;
+  gap: 10px;
+}

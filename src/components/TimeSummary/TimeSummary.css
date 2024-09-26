@@ -1,0 +1,30 @@
+/* TimeSummary.css */
+.summary-main {
+  padding: 20px;
+}
+
+/* Centering the table */
+.summary-table {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.summary-table th,
+.summary-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ffffff;
+}
+
+.summary-table th {
+  background-color: #444;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+}
+
+.summary-table tr:hover {
+  background-color: #161875;
+}

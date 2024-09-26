@@ -1,0 +1,45 @@
+/* TaskList.css */
+.task-main {
+  padding: 20px;
+}
+
+.task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+  padding: 20px;
+  background-color: #050000;
+  border-radius: 8px;
+}
+
+/* Task name styling */
+.task-name {
+  flex: 1; /* Take up remaining space to push the buttons to the right */
+}
+
+/* Button group to align buttons */
+.button-group {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+}
+
+/* Styling for buttons */
+.task-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.task-button:hover {
+  background-color: #555;
+}

@@ -1,0 +1,14 @@
+/* About.css */
+.about-main {
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  .about-main ul {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+
+  .about-main p {
+    margin-bottom: 15px;
+  }
