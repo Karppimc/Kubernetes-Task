@@ -10,3 +10,4 @@
 1. After installing dependencies, run `npm run start` in the Backend directory.
 2. Then run `npm run dev`in the Frontend directory
 3. Open the provided local URL in a browser to view the project.
+4. 
