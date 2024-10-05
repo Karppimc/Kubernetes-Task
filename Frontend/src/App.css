@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
 }
 
 /* App container with a flex column layout */
@@ -102,7 +102,7 @@ body {
     padding: 5px 10px;
   }
 
-  
+
   .page-container {
     width: 95vw; /* Slightly reduce width to prevent overflow */
     padding: 15px; /* Reduce padding to fit content better */

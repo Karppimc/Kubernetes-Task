@@ -1,4 +1,6 @@
 /* TaskManagement.css */
+
+/* Existing styles */
 .management-main {
   padding: 20px;
 }
@@ -8,7 +10,6 @@
   margin-bottom: 30px;
 }
 
-/* Centering the form elements */
 .management-form {
   display: flex;
   align-items: center;
@@ -16,20 +17,17 @@
   margin-bottom: 20px;
 }
 
-/* Adjust label styling with a fixed width */
 .management-label {
   font-weight: bold;
-  width: 100px; 
+  width: 100px;
 }
 
-/* Input field to take up available space */
 .management-input {
   flex: 1;
   padding: 8px;
-  min-width: 0; /* Prevent the input from overflowing */
+  min-width: 0;
 }
 
-/* Button for adding tasks */
 .management-button {
   padding: 10px 20px;
   cursor: pointer;
@@ -44,15 +42,16 @@
   background-color: #555;
 }
 
-/* Task list styles */
 .management-task-list {
   list-style-type: none;
   padding: 0;
 }
 
+/* New styles for aligning task items */
 .management-task-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* Three columns: task name, tags, buttons */
+  justify-items: center; /* Center content in the middle column */
   align-items: center;
   margin: 10px 0;
   padding: 15px;
@@ -60,8 +59,33 @@
   border-radius: 8px;
 }
 
-/* Align buttons in the task list */
+.task-name {
+  justify-self: start; /* Align task names to the left */
+}
+
+.task-tags {
+  display: flex;
+  gap: 10px;
+}
+
 .button-group {
   display: flex;
   gap: 10px;
+  justify-self: end; /* Align buttons to the right */
+}
+
+/* Tag button styling */
+.tag-number {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: default;
+  font-size: 0.9em;
+}
+/* Highlight selected tags */
+.tag-button.selected {
+  background-color: #007bff;
+  color: white;
 }

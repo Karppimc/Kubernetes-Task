@@ -14,17 +14,17 @@ const App = () => {
           <h1 className="banner-title">Task Tracker</h1>
           <nav className="nav-menu">
             <Link to="/" className="nav-link">Task List</Link>
-            <Link to="/summary" className="nav-link">Time Summary</Link>
             <Link to="/management" className="nav-link">Task Management</Link>
-            <Link to="/about" className="nav-link">About</Link> {/* New link for About */}
+            <Link to="/summary" className="nav-link">Time Summary</Link>
+            <Link to="/about" className="nav-link">About</Link>
           </nav>
         </header>
         <main className="main-content">
           <Routes>
             <Route path="/" element={<TaskList />} />
-            <Route path="/summary" element={<TimeSummary />} />
             <Route path="/management" element={<TaskManagement />} />
-            <Route path="/about" element={<About />} /> {/* New route for About */}
+            <Route path="/summary" element={<TimeSummary />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </main>
       </div>
