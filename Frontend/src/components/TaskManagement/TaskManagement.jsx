@@ -4,7 +4,7 @@ import './TaskManagement.css';
 const TaskManagement = () => {
   const [tasks, setTasks] = useState([]);
   const [newTaskName, setNewTaskName] = useState('');
-  const [newTaskTags, setNewTaskTags] = useState('');
+  const [newTaskTags, setNewTaskTags] = useState([]); // Updated to store selected tags
   const [newTagName, setNewTagName] = useState('');
   const [editTaskId, setEditTaskId] = useState(null);
   const [editTaskName, setEditTaskName] = useState('');
@@ -15,8 +15,20 @@ const TaskManagement = () => {
   const [filterTags, setFilterTags] = useState([]); // State to manage filtering
 
   useEffect(() => {
-    fetchTasks();
-    fetchTags();
+    let isMounted = true; // Flag to check if the component is mounted
+
+    const fetchTasksAndTags = async () => {
+      if (isMounted) {
+        await fetchTasks();
+        await fetchTags();
+      }
+    };
+
+    fetchTasksAndTags();
+
+    return () => {
+      isMounted = false; // Clean up when the component is unmounted
+    };
   }, []);
 
   // Fetch tasks from the backend
@@ -41,7 +53,7 @@ const TaskManagement = () => {
         throw new Error('Failed to fetch tags');
       }
       const data = await response.json();
-      setAllTags(data);
+      setAllTags(data); // Store all available tags
     } catch (err) {
       setError(err.message);
     }
@@ -55,6 +67,11 @@ const TaskManagement = () => {
       return;
     }
 
+    if (newTaskTags.length === 0) {
+      alert('At least one tag must be selected');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3010/tasks', {
         method: 'POST',
@@ -63,7 +80,7 @@ const TaskManagement = () => {
         },
         body: JSON.stringify({
           name: newTaskName,
-          tags: newTaskTags,
+          tags: newTaskTags.join(','), // Use the selected tags
         }),
       });
 
@@ -71,9 +88,9 @@ const TaskManagement = () => {
         throw new Error('Failed to add task');
       }
 
-      fetchTasks();
-      setNewTaskName('');
-      setNewTaskTags('');
+      fetchTasks(); // Refresh task list after adding a new task
+      setNewTaskName(''); // Reset task name input
+      setNewTaskTags([]); // Clear selected tags after submission
     } catch (err) {
       setError(err.message);
     }
@@ -148,12 +165,20 @@ const TaskManagement = () => {
   };
 
   // Toggle tag selection for a task
-  const toggleTagSelection = (tagId) => {
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(tagId)
-        ? prevSelectedTags.filter((id) => id !== tagId)
-        : [...prevSelectedTags, tagId]
-    );
+  const toggleTagSelection = (tagId, isAddingNewTask = false) => {
+    if (isAddingNewTask) {
+      setNewTaskTags((prevSelectedTags) =>
+        prevSelectedTags.includes(tagId)
+          ? prevSelectedTags.filter((id) => id !== tagId)
+          : [...prevSelectedTags, tagId]
+      );
+    } else {
+      setSelectedTags((prevSelectedTags) =>
+        prevSelectedTags.includes(tagId)
+          ? prevSelectedTags.filter((id) => id !== tagId)
+          : [...prevSelectedTags, tagId]
+      );
+    }
   };
 
   // Handle tag editing mode
@@ -174,7 +199,7 @@ const TaskManagement = () => {
 
   // Filter tasks based on selected tags
   const filteredTasks = filterTags.length > 0
-    ? tasks.filter(task => filterTags.every(tag => task.tags.split(',').includes(tag)))
+    ? tasks.filter((task) => filterTags.every((tag) => task.tags.split(',').includes(tag)))
     : tasks;
 
   // Reset tag filters
@@ -222,18 +247,26 @@ const TaskManagement = () => {
               value={newTaskName}
               onChange={(e) => setNewTaskName(e.target.value)}
             />
-            <label className="management-label">Tags (comma-separated):</label>
-            <input
-              type="text"
-              className="management-input"
-              placeholder="Enter tags"
-              value={newTaskTags}
-              onChange={(e) => setNewTaskTags(e.target.value)}
-            />
-            <button type="submit" className="management-button">Add Task</button>
+            <label className="management-label">Select Tags:</label>
+
+            <div className="tags-container">
+              {allTags.map((tag) => (
+                <label key={tag.id}>
+                  <input
+                    type="checkbox"
+                    checked={newTaskTags.includes(tag.id.toString())}
+                    onChange={() => toggleTagSelection(tag.id.toString(), true)}
+                  />
+                  {tag.name}
+                </label>
+              ))}
+            </div>
+
+            <button type="submit" className="management-button add-task-button">
+              Add Task
+            </button>
           </form>
 
-          {/* Form to add new tags */}
           <form className="management-form" onSubmit={(e) => e.preventDefault()}>
             <label className="management-label">New Tag:</label>
             <input
@@ -291,29 +324,19 @@ const TaskManagement = () => {
                     <span className="task-name">{task.name}</span>
                     <div className="task-tags">
                       {task.tags.split(',').map((tagId) => {
-                        const tagName = allTags.find(tag => tag.id === parseInt(tagId))?.name || tagId;
+                        const tagName = allTags.find((tag) => tag.id === parseInt(tagId))?.name || tagId;
                         return (
-                          <button
-                            key={tagId}
-                            className="tag-number"
-                            title={tagName}
-                          >
+                          <button key={tagId} className="tag-number" title={tagName}>
                             {tagId}
                           </button>
                         );
                       })}
                     </div>
                     <div className="button-group">
-                      <button
-                        className="management-button"
-                        onClick={() => handleEditTags(task)}
-                      >
+                      <button className="management-button" onClick={() => handleEditTags(task)}>
                         Edit Task
                       </button>
-                      <button
-                        className="management-button"
-                        onClick={() => handleDeleteTask(task.id)}
-                      >
+                      <button className="management-button" onClick={() => handleDeleteTask(task.id)}>
                         Delete
                       </button>
                     </div>

@@ -12,9 +12,10 @@
 
 .management-form {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
+  align-items: center;
 }
 
 .management-label {
@@ -36,10 +37,29 @@
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
+  white-space: nowrap; /* Ensure the button doesn't wrap */
 }
 
 .management-button:hover {
   background-color: #555;
+}
+
+/* Container for the tags, ensuring it breaks into new rows */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1; /* Allow this to take up remaining space */
+}
+
+.management-button:hover {
+  background-color: #555;
+}
+
+/* Ensure the button stays in place on the right */
+button.add-task-button {
+  flex-shrink: 0; /* Prevents shrinking */
+  align-self: flex-start; /* Aligns button to the top */
 }
 
 .management-task-list {
@@ -47,7 +67,7 @@
   padding: 0;
 }
 
-/* New styles for aligning task items */
+/* Fix for existing task layout */
 .management-task-item {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr; /* Three columns: task name, tags, buttons */
@@ -74,16 +94,21 @@
   justify-self: end; /* Align buttons to the right */
 }
 
-/* Tag button styling */
-.tag-number {
-  background-color: #555;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: default;
-  font-size: 0.9em;
+/* Fix for Filter by Tags layout */
+.filter-section {
+  margin-bottom: 20px;
 }
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px; /* Add gap between tag buttons */
+}
+
+.filter-tags button {
+  margin-right: 5px;
+}
+
 /* Highlight selected tags */
 .tag-button.selected {
   background-color: #007bff;

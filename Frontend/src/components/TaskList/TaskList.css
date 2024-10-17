@@ -1,35 +1,51 @@
-/* Add margin to create space between the filter section and the task list */
-.task-list-wrapper {
-  margin-top: 20px;
+/* TaskList.css */
+
+/* Add this section to align the filter section */
+.filter-section {
+  
+  margin-right: auto;
+  max-width: 700px; /* Adjust this width based on the layout of your tasks */
+  text-align: left; /* Ensures buttons align left inside the centered container */
 }
 
-/* Flex layout for task items */
-.task-item {
+.filter-tags {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #333;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  gap: 10px; /* Space between tag buttons */
+  justify-content: start; /* Align buttons to the left */
+  flex-wrap: wrap; /* Allow tags to wrap to the next line if too many */
 }
 
+.task-list-wrapper {
+  margin-top: 20px; /* Space between filter section and task list */
+}
+
+.task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.task-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* Aligns task name, tags, and buttons */
+  justify-items: center;
+  align-items: center;
+  margin: 10px 0;
+  padding: 15px;
+  background-color: #414040;
+  border-radius: 8px;
+}
 
 .task-name {
-  flex: 1;
-  text-align: left; /* Align text to the left */
+  justify-self: start; /* Align task name to the left */
 }
-
 
 .task-tags {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  gap: 5px;
+  gap: 10px; /* Space between tag buttons */
 }
 
-/* Align buttons to the right */
 .button-group {
   display: flex;
   gap: 10px;
+  justify-self: end; /* Align buttons to the right */
 }
