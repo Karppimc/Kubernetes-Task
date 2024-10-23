@@ -24,7 +24,7 @@ const About = () => {
         <p>AI tools were used in the troubleshooting of this application.</p>
 
         <h3>Working Hours</h3>
-        <p>Estimated hours spent on this project: 25</p>
+        <p>Estimated hours spent on this project: 40</p>
 
         <h3>Most Difficult Feature</h3>
         <p>The most difficult feature to implement was the dynamic task filtering based on tags.</p>
