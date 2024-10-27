@@ -1,30 +1,25 @@
-/* TimeSummary.css */
-.summary-main {
-  padding: 20px;
-}
-
-/* Centering the table */
 .summary-table {
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  border-collapse: collapse;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
 }
 
-.summary-table th,
-.summary-table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #ffffff;
+.summary-block {
+  background-color: #2f2f2f; /* Similar dark background */
+  color: #ffffff; /* White text */
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.summary-table th {
-  background-color: #444;
-  color: rgb(255, 255, 255);
-  font-weight: bold;
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
-.summary-table tr:hover {
-  background-color: #161875;
+.summary-cell {
+  margin: 0 1rem;
 }

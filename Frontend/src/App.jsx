@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TaskList from './components/TaskList/TaskList';
 import TimeSummary from './components/TimeSummary/TimeSummary';
 import TaskManagement from './components/TaskManagement/TaskManagement';
+import TaskDetails from './components/TaskDetails/TaskDetails'; // Import TaskDetails component
 import About from './components/About/About'; // Import the About component
 import './App.css';
 
@@ -16,6 +17,7 @@ const App = () => {
             <Link to="/" className="nav-link">Task List</Link>
             <Link to="/management" className="nav-link">Task Management</Link>
             <Link to="/summary" className="nav-link">Time Summary</Link>
+            <Link to="/details" className="nav-link">Task Details</Link> {/* New link */}
             <Link to="/about" className="nav-link">About</Link>
           </nav>
         </header>
@@ -24,6 +26,7 @@ const App = () => {
             <Route path="/" element={<TaskList />} />
             <Route path="/management" element={<TaskManagement />} />
             <Route path="/summary" element={<TimeSummary />} />
+            <Route path="/details" element={<TaskDetails />} /> {/* New route */}
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
@@ -33,4 +36,3 @@ const App = () => {
 };
 
 export default App;
-
