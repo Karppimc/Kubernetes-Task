@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './TaskDetails.css';
 
 const TaskDetails = () => {
@@ -9,14 +9,9 @@ const TaskDetails = () => {
   const [activityIntervals, setActivityIntervals] = useState([]);
   const [newInterval, setNewInterval] = useState({ start: '', stop: '' });
   const [error, setError] = useState(null);
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
 
   // Helper functions
-  function getLocalTime() {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  }
-
   function getEndOfDayTime() {
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 0, 0);
@@ -30,37 +25,8 @@ const TaskDetails = () => {
     return adjustedDate.toISOString().slice(0, 16);
   }
 
-  // Fetch tasks on component mount
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch('http://localhost:3010/tasks');
-        if (!response.ok) throw new Error('Failed to fetch tasks');
-        const tasksData = await response.json();
-        setTasks(tasksData);
-
-        // Set default task if none is selected
-        if (!selectedTaskId && tasksData.length > 0) {
-          const defaultTaskId = tasksData[0].id;
-          setSelectedTaskId(defaultTaskId);
-          localStorage.setItem('lastSelectedTask', defaultTaskId);
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    fetchTasks();
-  }, [selectedTaskId]);
-
-  // Save selected task to localStorage whenever it changes
-  const handleTaskChange = (taskId) => {
-    setSelectedTaskId(taskId);
-    localStorage.setItem('lastSelectedTask', taskId);
-  };
-
-  // Fetch activity intervals based on task selection and date range
-  const fetchActivityIntervals = async () => {
+  // Debounced fetch for activity intervals
+  const fetchActivityIntervals = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:3010/timestamps');
       if (!response.ok) throw new Error('Failed to fetch timestamps');
@@ -111,18 +77,51 @@ const TaskDetails = () => {
       }
 
       filteredIntervals.sort((a, b) => a.start - b.start);
-
       setActivityIntervals(checkForOverlaps(filteredIntervals));
     } catch (err) {
       setError(err.message);
     }
-  };
-
-  useEffect(() => {
-    if (selectedTaskId) fetchActivityIntervals();
   }, [selectedTaskId, startTime, endTime]);
 
-  // Function to check for overlapping intervals
+  // Apply debounce to interval fetching
+  useEffect(() => {
+    if (!selectedTaskId) return;
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+
+    const timeout = setTimeout(() => {
+      fetchActivityIntervals();
+    }, 300);
+
+    setDebounceTimeout(timeout);
+    return () => clearTimeout(timeout);
+  }, [selectedTaskId, startTime, endTime, fetchActivityIntervals]);
+
+  // Fetch tasks once on mount
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('http://localhost:3010/tasks');
+        if (!response.ok) throw new Error('Failed to fetch tasks');
+        const tasksData = await response.json();
+        setTasks(tasksData);
+
+        if (!selectedTaskId && tasksData.length > 0) {
+          const defaultTaskId = tasksData[0].id;
+          setSelectedTaskId(defaultTaskId);
+          localStorage.setItem('lastSelectedTask', defaultTaskId);
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  const handleTaskChange = (taskId) => {
+    setSelectedTaskId(taskId);
+    localStorage.setItem('lastSelectedTask', taskId);
+  };
+
   const checkForOverlaps = (intervals) => {
     const updatedIntervals = intervals.map((interval, index, array) => {
       if (index > 0 && array[index - 1].stop > interval.start) {
