@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Bar } from 'react-chartjs-2';
+import { Chart, LinearScale, CategoryScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import './TaskDetails.css';
+
+Chart.register(LinearScale, CategoryScale, BarElement, Title, Tooltip, Legend);
 
 const TaskDetails = () => {
   const [tasks, setTasks] = useState([]);
@@ -10,6 +14,7 @@ const TaskDetails = () => {
   const [newInterval, setNewInterval] = useState({ start: '', stop: '' });
   const [error, setError] = useState(null);
   const [debounceTimeout, setDebounceTimeout] = useState(null);
+  const [dailyActiveTimes, setDailyActiveTimes] = useState({});
 
   // Helper functions
   function getEndOfDayTime() {
@@ -25,7 +30,43 @@ const TaskDetails = () => {
     return adjustedDate.toISOString().slice(0, 16);
   }
 
-  // Debounced fetch for activity intervals
+  // Calculate daily active times from intervals
+  const calculateDailyActiveTimes = () => {
+    const dailySummary = {};
+
+    const taskIntervals = activityIntervals.filter(interval => interval.taskId === Number(selectedTaskId));
+
+    taskIntervals.forEach((interval) => {
+      if (!interval.stop) return;
+
+      const startDate = new Date(interval.start);
+      const stopDate = new Date(interval.stop);
+      let currentDate = new Date(startDate);
+
+      console.log(`Processing interval from ${startDate} to ${stopDate}`);
+
+      while (currentDate <= stopDate) {
+        const dayKey = currentDate.toISOString().slice(0, 10);
+
+        let timeSpent;
+        if (currentDate.toDateString() === startDate.toDateString()) {
+          timeSpent = (new Date(dayKey + 'T23:59:59') - startDate) / (1000 * 60 * 60);
+        } else if (currentDate.toDateString() === stopDate.toDateString()) {
+          timeSpent = (stopDate - new Date(dayKey + 'T00:00:00')) / (1000 * 60 * 60);
+        } else {
+          timeSpent = 24;
+        }
+
+        dailySummary[dayKey] = (dailySummary[dayKey] || 0) + timeSpent;
+
+        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setHours(0, 0, 0, 0);
+      }
+    });
+
+    setDailyActiveTimes(dailySummary);
+  };
+
   const fetchActivityIntervals = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:3010/timestamps');
@@ -54,6 +95,7 @@ const TaskDetails = () => {
               id: timestamp.id,
               start: currentStart,
               stop: timestampDate,
+              taskId: timestamp.task,
               startId: timestamp.id - 1,
               stopId: timestamp.id,
               isNew: false,
@@ -69,6 +111,7 @@ const TaskDetails = () => {
           id: Date.now(),
           start: currentStart,
           stop: null,
+          taskId: selectedTaskId,
           isNew: false,
           isModified: false,
           isOngoing: true,
@@ -77,13 +120,19 @@ const TaskDetails = () => {
       }
 
       filteredIntervals.sort((a, b) => a.start - b.start);
+      console.log("Filtered Activity Intervals:", filteredIntervals);
       setActivityIntervals(checkForOverlaps(filteredIntervals));
     } catch (err) {
       setError(err.message);
     }
   }, [selectedTaskId, startTime, endTime]);
 
-  // Apply debounce to interval fetching
+  useEffect(() => {
+    if (activityIntervals.length > 0) {
+      calculateDailyActiveTimes();
+    }
+  }, [activityIntervals]);
+
   useEffect(() => {
     if (!selectedTaskId) return;
     if (debounceTimeout) clearTimeout(debounceTimeout);
@@ -96,7 +145,6 @@ const TaskDetails = () => {
     return () => clearTimeout(timeout);
   }, [selectedTaskId, startTime, endTime, fetchActivityIntervals]);
 
-  // Fetch tasks once on mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -133,7 +181,6 @@ const TaskDetails = () => {
     return updatedIntervals;
   };
 
-  // Handle adding a new interval
   const handleAddInterval = () => {
     if (!newInterval.start || !newInterval.stop) {
       setError('Please enter both start and stop times for the new interval.');
@@ -149,14 +196,13 @@ const TaskDetails = () => {
 
     const updatedIntervals = [
       ...activityIntervals,
-      { id: Date.now(), start, stop, isNew: true, isModified: false, hasOverlap: false }
+      { id: Date.now(), start, stop, taskId: selectedTaskId, isNew: true, isModified: false, hasOverlap: false }
     ].sort((a, b) => a.start - b.start);
 
     setActivityIntervals(checkForOverlaps(updatedIntervals));
     setNewInterval({ start: '', stop: '' });
   };
 
-  // Handle editing interval times
   const handleEditInterval = (index, field, value) => {
     const updatedIntervals = [...activityIntervals];
     updatedIntervals[index][field] = new Date(value);
@@ -165,7 +211,6 @@ const TaskDetails = () => {
     setActivityIntervals(checkForOverlaps(updatedIntervals.sort((a, b) => a.start - b.start)));
   };
 
-  // Handle saving changes to the backend
   const saveChanges = async () => {
     try {
       for (const interval of activityIntervals) {
@@ -201,7 +246,6 @@ const TaskDetails = () => {
     }
   };
 
-  // Handle deleting an interval
   const handleDeleteInterval = async (index) => {
     const intervalToDelete = activityIntervals[index];
     if (!intervalToDelete.isNew) {
@@ -256,7 +300,7 @@ const TaskDetails = () => {
         <h3>Activity Intervals</h3>
         <table className="details-table">
           <thead>
-            <tr>
+            <tr style={{ color: 'black' }}>
               <th>Start</th>
               <th>Stop</th>
               <th>Actions</th>
@@ -265,14 +309,14 @@ const TaskDetails = () => {
           <tbody>
             {activityIntervals.map((interval, index) => (
               <tr key={interval.id} className={`${interval.hasOverlap ? 'overlap' : ''}`}>
-                <td>
+                <td style={{ color: 'black' }}>
                   <input
                     type="datetime-local"
                     value={formatToLocalDateTime(interval.start)}
                     onChange={(e) => handleEditInterval(index, 'start', e.target.value)}
                   />
                 </td>
-                <td>
+                <td style={{ color: 'black' }}>
                   {interval.stop ? (
                     <input
                       type="datetime-local"
@@ -283,13 +327,60 @@ const TaskDetails = () => {
                     <span>Ongoing</span>
                   )}
                 </td>
-                <td>
+                <td style={{ color: 'black' }}>
                   <button onClick={() => handleDeleteInterval(index)}>Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <h3>Daily Active Times</h3>
+        <Bar
+  data={{
+    labels: Object.keys(dailyActiveTimes),
+    datasets: [
+      {
+        label: 'Active Time (Hours and Minutes)',
+        data: Object.values(dailyActiveTimes).map((time) => {
+          const hours = Math.floor(time);
+          const minutes = Math.round((time - hours) * 60);
+          return hours + minutes / 60; // keep the value in decimal for chart scaling
+        }),
+        backgroundColor: 'rgba(100, 149, 237, 0.7)', // Custom color for bars
+      },
+    ],
+  }}
+  options={{
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Hours', color: 'black' },
+        ticks: { color: 'black' },
+      },
+      x: {
+        title: { display: true, text: 'Date', color: 'black' },
+        ticks: { color: 'black' },
+      },
+    },
+    plugins: {
+      legend: { labels: { color: 'black' } },
+      title: { display: true, text: 'Daily Active Times', color: 'black' },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const time = context.raw;
+            const hours = Math.floor(time);
+            const minutes = Math.round((time - hours) * 60);
+            return `${hours}h ${minutes}m`; // Display hours and minutes in tooltip
+          },
+        },
+      },
+    },
+  }}
+/>
+
+
 
         <h3>Add New Interval</h3>
         <div className="new-interval-inputs">
