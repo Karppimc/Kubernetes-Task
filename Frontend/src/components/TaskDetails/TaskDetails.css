@@ -1,41 +1,74 @@
-.intervals-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+/* General table styling */
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-top: 15px;
+}
 
-  .interval-block {
-    background-color: #3e3e3e;
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.details-table th {
+  padding: 10px;
+  text-align: left;
+  background-color: #3e3e3e;
+  color: #fff;
+  border-radius: 5px 5px 0 0;
+  font-weight: bold;
+}
 
-  .interval-datetime {
-    display: flex;
-    flex-direction: column;
-    margin-right: 10px;
-  }
+.details-table td {
+  padding: 8px;
+  background-color: #4a4a4a;
+  color: #fff;
+  border: 1px solid #3e3e3e;
+  text-align: center;
+  font-weight: normal;
+}
 
-  .interval-label {
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
+/* Overlap row styling with subtle borders and background */
+/* Apply a more specific selector for the overlap rows */
+.details-table .overlap td {
+  background-color: #ccffdb !important; /* Light red background */
+  border-left: 4px solid #d9534f; /* Left border for indication */
+  color: #333; /* Text color for contrast */
+}
 
-  .interval-button {
-    padding: 5px 10px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
 
-  .interval-button:hover {
-    background-color: #555;
-  }
-  .overlap {
-    background-color: #ffcccc;
-  }
+/* Button styling */
+.interval-button {
+  padding: 6px 12px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.interval-button:hover {
+  background-color: #555;
+  transform: scale(1.05);
+}
+
+button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #472727;
+}
+
+button:disabled {
+  background-color: #380202;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+

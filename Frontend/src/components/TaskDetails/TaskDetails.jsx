@@ -3,13 +3,14 @@ import './TaskDetails.css';
 
 const TaskDetails = () => {
   const [tasks, setTasks] = useState([]);
-  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState(localStorage.getItem('lastSelectedTask') || null);
   const [startTime, setStartTime] = useState('2024-10-01T12:00');
   const [endTime, setEndTime] = useState(getEndOfDayTime());
   const [activityIntervals, setActivityIntervals] = useState([]);
   const [newInterval, setNewInterval] = useState({ start: '', stop: '' });
   const [error, setError] = useState(null);
 
+  // Helper functions
   function getLocalTime() {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -29,6 +30,7 @@ const TaskDetails = () => {
     return adjustedDate.toISOString().slice(0, 16);
   }
 
+  // Fetch tasks on component mount
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -36,14 +38,28 @@ const TaskDetails = () => {
         if (!response.ok) throw new Error('Failed to fetch tasks');
         const tasksData = await response.json();
         setTasks(tasksData);
+
+        // Set default task if none is selected
+        if (!selectedTaskId && tasksData.length > 0) {
+          const defaultTaskId = tasksData[0].id;
+          setSelectedTaskId(defaultTaskId);
+          localStorage.setItem('lastSelectedTask', defaultTaskId);
+        }
       } catch (err) {
         setError(err.message);
       }
     };
 
     fetchTasks();
-  }, []);
+  }, [selectedTaskId]);
 
+  // Save selected task to localStorage whenever it changes
+  const handleTaskChange = (taskId) => {
+    setSelectedTaskId(taskId);
+    localStorage.setItem('lastSelectedTask', taskId);
+  };
+
+  // Fetch activity intervals based on task selection and date range
   const fetchActivityIntervals = async () => {
     try {
       const response = await fetch('http://localhost:3010/timestamps');
@@ -76,7 +92,7 @@ const TaskDetails = () => {
               stopId: timestamp.id,
               isNew: false,
               isModified: false,
-              hasOverlap: false, // Initial state of overlap
+              hasOverlap: false,
             });
             currentStart = null;
           }
@@ -94,35 +110,31 @@ const TaskDetails = () => {
         });
       }
 
-      // Sort intervals and check for overlaps
       filteredIntervals.sort((a, b) => a.start - b.start);
+
       setActivityIntervals(checkForOverlaps(filteredIntervals));
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // Function to check for overlapping intervals
-  const checkForOverlaps = (intervals) => {
-    const updatedIntervals = intervals.map((interval) => ({ ...interval, hasOverlap: false }));
-
-    for (let i = 0; i < updatedIntervals.length - 1; i++) {
-      for (let j = i + 1; j < updatedIntervals.length; j++) {
-        if (updatedIntervals[i].stop > updatedIntervals[j].start) {
-          updatedIntervals[i].hasOverlap = true;
-          updatedIntervals[j].hasOverlap = true;
-        } else {
-          break; // Stop checking if there’s no overlap
-        }
-      }
-    }
-    return updatedIntervals;
-  };
-
   useEffect(() => {
     if (selectedTaskId) fetchActivityIntervals();
   }, [selectedTaskId, startTime, endTime]);
 
+  // Function to check for overlapping intervals
+  const checkForOverlaps = (intervals) => {
+    const updatedIntervals = intervals.map((interval, index, array) => {
+      if (index > 0 && array[index - 1].stop > interval.start) {
+        interval.hasOverlap = true;
+        array[index - 1].hasOverlap = true;
+      }
+      return interval;
+    });
+    return updatedIntervals;
+  };
+
+  // Handle adding a new interval
   const handleAddInterval = () => {
     if (!newInterval.start || !newInterval.stop) {
       setError('Please enter both start and stop times for the new interval.');
@@ -136,23 +148,25 @@ const TaskDetails = () => {
       return;
     }
 
-    setActivityIntervals(
-      checkForOverlaps(
-        [...activityIntervals, { id: Date.now(), start, stop, isNew: true, isModified: false }].sort(
-          (a, b) => a.start - b.start
-        )
-      )
-    );
+    const updatedIntervals = [
+      ...activityIntervals,
+      { id: Date.now(), start, stop, isNew: true, isModified: false, hasOverlap: false }
+    ].sort((a, b) => a.start - b.start);
+
+    setActivityIntervals(checkForOverlaps(updatedIntervals));
     setNewInterval({ start: '', stop: '' });
   };
 
+  // Handle editing interval times
   const handleEditInterval = (index, field, value) => {
     const updatedIntervals = [...activityIntervals];
     updatedIntervals[index][field] = new Date(value);
     updatedIntervals[index].isModified = true;
+
     setActivityIntervals(checkForOverlaps(updatedIntervals.sort((a, b) => a.start - b.start)));
   };
 
+  // Handle saving changes to the backend
   const saveChanges = async () => {
     try {
       for (const interval of activityIntervals) {
@@ -188,6 +202,7 @@ const TaskDetails = () => {
     }
   };
 
+  // Handle deleting an interval
   const handleDeleteInterval = async (index) => {
     const intervalToDelete = activityIntervals[index];
     if (!intervalToDelete.isNew) {
@@ -200,7 +215,8 @@ const TaskDetails = () => {
       }
     }
 
-    setActivityIntervals(activityIntervals.filter((_, i) => i !== index));
+    const updatedIntervals = activityIntervals.filter((_, i) => i !== index);
+    setActivityIntervals(checkForOverlaps(updatedIntervals));
   };
 
   return (
@@ -210,10 +226,10 @@ const TaskDetails = () => {
       </header>
       <main className="details-main">
         <label>Select Task:</label>
-        <select value={selectedTaskId || ''} onChange={(e) => setSelectedTaskId(e.target.value)}>
-          <option value="" disabled>
-            Select a task
-          </option>
+        <select
+          value={selectedTaskId || ''}
+          onChange={(e) => handleTaskChange(e.target.value)}
+        >
           {tasks.map((task) => (
             <option key={task.id} value={task.id}>
               {task.name}
@@ -223,9 +239,17 @@ const TaskDetails = () => {
 
         <div>
           <label>Start Time: </label>
-          <input type="datetime-local" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+          <input
+            type="datetime-local"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
           <label>End Time: </label>
-          <input type="datetime-local" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+          <input
+            type="datetime-local"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
         </div>
 
         {error && <p className="error-message">{error}</p>}
