@@ -5,14 +5,12 @@ body {
   background-color: #ffffff;
 }
 
-/* App container with a flex column layout */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Banner at the top */
 .banner {
   background-color: #333;
   color: white;
@@ -24,21 +22,18 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Title in the banner */
 .banner-title {
   margin: 0;
   font-size: 2.5em;
   flex: 1;
 }
 
-/* Navigation menu styles */
 .nav-menu {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
 }
 
-/* Navigation links */
 .nav-link {
   color: white;
   text-decoration: none;
@@ -52,7 +47,6 @@ body {
   background-color: #555;
 }
 
-/* Main content to take the rest of the screen */
 .main-content {
   flex: 1;
   display: flex;
@@ -63,7 +57,6 @@ body {
   width: 100vw; /* Full viewport width */
 }
 
-/* Style for the container of each page to fill more space */
 .page-container {
   width: 100vw; /* Full viewport width */
   max-width: 1200px; /* Limit width on large screens */
@@ -74,7 +67,6 @@ body {
   margin: 0 auto;
   box-sizing: border-box;
 }
-
 
 .page-header {
   background-color: #444;
@@ -101,7 +93,6 @@ body {
     font-size: 1em;
     padding: 5px 10px;
   }
-
 
   .page-container {
     width: 95vw; /* Slightly reduce width to prevent overflow */

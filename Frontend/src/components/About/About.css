@@ -1,14 +1,50 @@
-/* About.css */
-.about-main {
-    padding: 20px;
-    line-height: 1.6;
+
+.about-page {
+  padding: 20px;
+  color: #ffffff;
+  background-color: #333;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.about-content {
+  line-height: 1.6;
+
+}
+
+.about-content h3 {
+  margin-top: 20px;
+  color: #ffffff;
+}
+
+.about-content p {
+  margin-bottom: 15px;
+  color: #fffefe;
+}
+
+/* Styling for lists */
+.about-content ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  color: #ddd;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 500px) {
+  .about-page {
+    padding: 15px;
   }
 
-  .about-main ul {
-    list-style-type: disc;
-    margin-left: 20px;
+  .about-content h2 {
+    font-size: 1.5em;
+    text-align: center;
   }
 
-  .about-main p {
-    margin-bottom: 15px;
+  .about-content h3 {
+    font-size: 1.2em;
   }
+
+  .about-content p {
+    font-size: 0.9em;
+  }
+}

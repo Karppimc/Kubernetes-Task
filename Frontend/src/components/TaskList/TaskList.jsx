@@ -29,7 +29,11 @@ const TaskList = () => {
       const timestampData = await timestampResponse.json();
 
       if (isMounted.current) {
-        setTasks(taskData);
+        const savedOrder = JSON.parse(localStorage.getItem('taskOrder'));
+        const orderedTasks = savedOrder
+          ? savedOrder.map(id => taskData.find(task => task.id === id)).filter(Boolean)
+          : taskData;
+        setTasks(orderedTasks);
 
         // Map tags into an object
         const tagsMap = {};
@@ -58,7 +62,6 @@ const TaskList = () => {
       if (isMounted.current) setError(error.message);
     }
   };
-
 
   useEffect(() => {
     isMounted.current = true;
@@ -169,6 +172,9 @@ const TaskList = () => {
     const [draggedTask] = updatedTasks.splice(dragIndex, 1);
     updatedTasks.splice(hoverIndex, 0, draggedTask);
     setTasks(updatedTasks);
+
+    // Save the updated order to localStorage
+    localStorage.setItem('taskOrder', JSON.stringify(updatedTasks.map(task => task.id)));
   };
 
   const TaskItem = ({ task, index, moveTask }) => {

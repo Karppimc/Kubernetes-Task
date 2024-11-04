@@ -1,22 +1,19 @@
 /* TaskList.css */
-
-/* Add this section to align the filter section */
 .filter-section {
-  
   margin-right: auto;
-  max-width: 700px; /* Adjust this width based on the layout of your tasks */
-  text-align: left; /* Ensures buttons align left inside the centered container */
+  max-width: 700px;
+  text-align: left;
 }
 
 .filter-tags {
   display: flex;
-  gap: 10px; /* Space between tag buttons */
-  justify-content: start; /* Align buttons to the left */
-  flex-wrap: wrap; /* Allow tags to wrap to the next line if too many */
+  gap: 10px;
+  justify-content: start;
+  flex-wrap: wrap;
 }
 
 .task-list-wrapper {
-  margin-top: 20px; /* Space between filter section and task list */
+  margin-top: 20px;
 }
 
 .task-list {
@@ -26,7 +23,7 @@
 
 .task-item {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr; /* Aligns task name, tags, and buttons */
+  grid-template-columns: 1fr 2fr 1fr; /* Task name, tags, buttons */
   justify-items: center;
   align-items: center;
   margin: 10px 0;
@@ -36,16 +33,41 @@
 }
 
 .task-name {
-  justify-self: start; /* Align task name to the left */
+  justify-self: start;
 }
 
 .task-tags {
   display: flex;
-  gap: 10px; /* Space between tag buttons */
+  gap: 10px;
 }
 
 .button-group {
   display: flex;
   gap: 10px;
-  justify-self: end; /* Align buttons to the right */
+  justify-self: end;
+}
+
+/* Responsive styles for screens smaller than 500px */
+@media (max-width: 500px) {
+  .task-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-tags {
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .button-group {
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .task-name {
+    font-size: 1rem;
+    margin-bottom: 5px;
+  }
 }

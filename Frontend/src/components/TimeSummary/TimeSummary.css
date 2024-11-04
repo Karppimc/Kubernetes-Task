@@ -1,17 +1,19 @@
+/* TimeSummary.css */
 .summary-table {
   width: 100%;
   margin-top: 1rem;
 }
 
 .summary-block {
-  background-color: #2f2f2f; /* Similar dark background */
-  color: #ffffff; /* White text */
+  background-color: #2f2f2f;
+  color: #ffffff;
   padding: 1rem;
   margin: 0.5rem 0;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* Allow content to wrap on smaller screens */
 }
 
 .summary-row {
@@ -22,4 +24,27 @@
 
 .summary-cell {
   margin: 0 1rem;
+}
+
+/* Responsive styles for screens smaller than 500px */
+@media (max-width: 500px) {
+  .summary-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left for readability */
+  }
+
+  .summary-block {
+    flex-direction: column; /* Stack task/tag details and total time */
+    align-items: flex-start; /* Align items to the start */
+  }
+
+  .summary-cell {
+    margin: 0.5rem 0; /* Add margin between stacked items */
+  }
+
+  input[type="datetime-local"] {
+    width: 100%; /* Ensure input fields take full width on small screens */
+    margin-bottom: 1rem; /* Add space between inputs */
+  }
 }

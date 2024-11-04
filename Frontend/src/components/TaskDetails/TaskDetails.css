@@ -2,74 +2,95 @@
 .details-table {
   width: 100%;
   border-collapse: collapse;
-  border-spacing: 0;
   margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.details-table th,
+.details-table td {
+  padding: 10px;
+  text-align: left;
 }
 
 .details-table th {
-  padding: 10px;
-  text-align: left;
   background-color: #3e3e3e;
-  color: #fff;
-  border-radius: 5px 5px 0 0;
-  font-weight: bold;
+  color: white;
 }
 
 .details-table td {
-  padding: 8px;
   background-color: #4a4a4a;
-  color: #fff;
-  border: 1px solid #3e3e3e;
+  color: white;
   text-align: center;
-  font-weight: normal;
 }
 
-/* Overlap row styling with subtle borders and background */
-/* Apply a more specific selector for the overlap rows */
+/* Overlap row styling */
 .details-table .overlap td {
-  background-color: #ccffdb !important; /* Light red background */
-  border-left: 4px solid #d9534f; /* Left border for indication */
-  color: #333; /* Text color for contrast */
+  background-color: #ccffdb;
+  border-left: 4px solid #d9534f;
+  color: #333;
 }
-
 
 /* Button styling */
-.interval-button {
-  padding: 6px 12px;
-  background-color: #333;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s, transform 0.1s;
-}
-
-.interval-button:hover {
-  background-color: #555;
-  transform: scale(1.05);
-}
-
 button {
   background-color: #333;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 4px;
   padding: 8px 16px;
   cursor: pointer;
   transition: background-color 0.3s;
-  font-size: 14px;
-  font-weight: bold;
 }
 
 button:hover {
-  background-color: #472727;
+  background-color: #555;
 }
 
 button:disabled {
-  background-color: #380202;
+  background-color: #555;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
+/* Input fields styling */
+.new-interval-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
 
+.new-interval-inputs label {
+  margin-right: 10px;
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 500px) {
+  .details-table th,
+  .details-table td {
+    padding: 8px;
+  }
+
+  .new-interval-inputs {
+    flex-direction: column;
+  }
+
+  .details-main {
+    padding: 10px;
+  }
+
+  input[type="datetime-local"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+/* Bar chart styling */
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+}
