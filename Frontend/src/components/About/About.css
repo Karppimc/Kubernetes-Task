@@ -1,25 +1,30 @@
-
 .about-page {
   padding: 20px;
-  color: #ffffff;
-  background-color: #333;
+  color: #f1c40f;
+  background-color: #2e2e2e; /* Improved contrast */
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .about-content {
   line-height: 1.6;
+}
 
+.about-content h2 {
+  font-size: 2rem; /* Ensuring a readable size */
+  color: #ffbf00; /* High contrast for headers */
 }
 
 .about-content h3 {
   margin-top: 20px;
-  color: #ffffff;
+  font-size: 1.5rem; /* Suitable size for sub-headers */
+  color: #f1c40f; /* Improved contrast for sub-headers */
 }
 
 .about-content p {
   margin-bottom: 15px;
-  color: #fffefe;
+  font-size: 1rem; /* Readable paragraph text */
+  color: #f5f5f5; /* High contrast for text */
 }
 
 /* Styling for lists */
@@ -29,6 +34,12 @@
   color: #ddd;
 }
 
+/* Keyboard focus outline */
+a, button, input, textarea, select {
+  outline: 2px solid #ffbf00; /* High-contrast yellow focus */
+  outline-offset: 2px;
+}
+
 /* Responsive design for smaller screens */
 @media (max-width: 500px) {
   .about-page {
@@ -36,15 +47,15 @@
   }
 
   .about-content h2 {
-    font-size: 1.5em;
+    font-size: 1.8rem;
     text-align: center;
   }
 
   .about-content h3 {
-    font-size: 1.2em;
+    font-size: 1.3rem;
   }
 
   .about-content p {
-    font-size: 0.9em;
+    font-size: 0.95rem;
   }
 }

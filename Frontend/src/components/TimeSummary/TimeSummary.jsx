@@ -147,32 +147,44 @@ const TimeSummary = () => {
         <h2>Summary of Time Spent</h2>
       </header>
       <main className="summary-main">
-        <label>Start Time: </label>
-        <input type="datetime-local" value={startTime} onChange={handleStartTimeChange} />
-        <label>End Time: </label>
-        <input type="datetime-local" value={endTime} onChange={handleEndTimeChange} />
+        <label htmlFor="start-time">Start Time: </label>
+        <input
+          id="start-time"
+          type="datetime-local"
+          value={startTime}
+          onChange={handleStartTimeChange}
+          aria-label="Select start time"
+        />
+        <label htmlFor="end-time">End Time: </label>
+        <input
+          id="end-time"
+          type="datetime-local"
+          value={endTime}
+          onChange={handleEndTimeChange}
+          aria-label="Select end time"
+        />
 
         {error && <p className="error-message">{error}</p>}
 
         <h3>Task Summary</h3>
-        <div className="summary-table">
+        <div className="summary-table" tabIndex={0} role="table" aria-label="Task summary">
           {taskSummary.map((task) => (
-            <div key={task.id} className="summary-block">
-              <div className="summary-row">
-                <div className="summary-cell"><strong>Task:</strong> {task.name}</div>
-                <div className="summary-cell"><strong>Total Time:</strong> {task.totalTime}</div>
+            <div key={task.id} className="summary-block" role="row">
+              <div className="summary-row" role="grid">
+                <div className="summary-cell" role="gridcell"><strong>Task:</strong> {task.name}</div>
+                <div className="summary-cell" role="gridcell"><strong>Total Time:</strong> {task.totalTime}</div>
               </div>
             </div>
           ))}
         </div>
 
         <h3>Tag Summary</h3>
-        <div className="summary-table">
+        <div className="summary-table" tabIndex={0} role="table" aria-label="Tag summary">
           {tagSummary.map((tag) => (
-            <div key={tag.id} className="summary-block">
-              <div className="summary-row">
-                <div className="summary-cell"><strong>Tag:</strong> {tag.name}</div>
-                <div className="summary-cell"><strong>Total Time:</strong> {tag.totalTime}</div>
+            <div key={tag.id} className="summary-block" role="row">
+              <div className="summary-row" role="grid">
+                <div className="summary-cell" role="gridcell"><strong>Tag:</strong> {tag.name}</div>
+                <div className="summary-cell" role="gridcell"><strong>Total Time:</strong> {tag.totalTime}</div>
               </div>
             </div>
           ))}

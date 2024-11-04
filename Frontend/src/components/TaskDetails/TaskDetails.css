@@ -13,36 +13,42 @@
 }
 
 .details-table th {
-  background-color: #3e3e3e;
-  color: white;
+  background-color: #2e2e2e; /* Matching TaskList background */
+  color: #fff;
 }
 
 .details-table td {
-  background-color: #4a4a4a;
-  color: white;
+  background-color: #2e2e2e; /* Matching TaskList background */
+  color: #fff;
   text-align: center;
 }
 
 /* Overlap row styling */
 .details-table .overlap td {
-  background-color: #ccffdb;
+  background-color: #ffe6e6;
   border-left: 4px solid #d9534f;
   color: #333;
 }
 
 /* Button styling */
 button {
-  background-color: #333;
-  color: white;
+  background-color: #007bff;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #555;
+  background-color: #0056b3; /* Matching TaskList hover effect */
+}
+
+button:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
 }
 
 button:disabled {
@@ -61,6 +67,18 @@ button:disabled {
 
 .new-interval-inputs label {
   margin-right: 10px;
+  color: #fff; /* Ensuring label text is visible */
+}
+
+input[type="datetime-local"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="datetime-local"]:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
 }
 
 /* Responsive styles for smaller screens */

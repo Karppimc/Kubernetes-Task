@@ -207,11 +207,21 @@ const TaskList = () => {
     drag(drop(ref));
 
     return (
-      <li ref={ref} className={`task-item ${isDragging ? 'dragging' : ''}`}>
+      <li
+        ref={ref}
+        className={`task-item ${isDragging ? 'dragging' : ''}`}
+        tabIndex={0} // Makes the task keyboard navigable
+        role="listitem"
+      >
         <span className="task-name">{task.name}</span>
         <div className="task-tags">
           {task.tags.split(',').map(tagId => (
-            <button key={tagId} className="tag-number" title={tags[tagId]}>
+            <button
+              key={tagId}
+              className="tag-number"
+              title={tags[tagId]}
+              aria-label={`Tag ${tags[tagId]}`} // Improved accessibility with aria-label
+            >
               {tagId}
             </button>
           ))}
@@ -220,20 +230,23 @@ const TaskList = () => {
           <button
             className={`task-button ${isActive ? 'active' : ''}`}
             onClick={() => handleStartTask(task.id)}
-            disabled={isActive} // Disable the start button if active
+            disabled={isActive}
+            aria-label={isActive ? 'Task is running' : 'Start task'}
           >
             {isActive ? 'Running' : 'Start'}
           </button>
           <button
             className="task-button"
             onClick={() => handleStopTask(task.id)}
-            disabled={!isActive} // Disable the stop button if not active
+            disabled={!isActive}
+            aria-label="Stop task"
           >
             Stop
           </button>
           <button
             className="task-button"
             onClick={() => handleDeleteTask(task.id)}
+            aria-label="Delete task"
           >
             Delete
           </button>
@@ -251,7 +264,6 @@ const TaskList = () => {
         <main className="task-main">
           {error && <p className="error-message">{error}</p>}
 
-          {/* Tag Filter Section */}
           <section className="filter-section">
             <h3>Filter by Tags</h3>
             <div className="filter-tags">
@@ -263,19 +275,19 @@ const TaskList = () => {
                   }`}
                   onClick={() => toggleFilterTag(tagId)}
                   title={tags[tagId]}
+                  aria-label={`Filter by tag ${tags[tagId]}`}
                 >
                   {tagId}
                 </button>
               ))}
             </div>
-            <button className="task-button" onClick={resetFilters}>
+            <button className="task-button" onClick={resetFilters} aria-label="Reset filters">
               Reset Filters
             </button>
           </section>
 
-          {/* Task List */}
           <div className="task-list-wrapper">
-            <ul className="task-list">
+            <ul className="task-list" role="list">
               {filteredTasks.map((task, index) => (
                 <TaskItem
                   key={task.id}

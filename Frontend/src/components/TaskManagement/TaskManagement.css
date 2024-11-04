@@ -31,23 +31,28 @@
 .management-button {
   padding: 10px 20px;
   cursor: pointer;
-  background-color: #333;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  white-space: nowrap; /* Ensure the button doesn't wrap */
+  white-space: nowrap;
 }
 
 .management-button:hover {
-  background-color: #555;
+  background-color: #0056b3;
+}
+
+.management-button:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
 }
 
 .tags-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  flex: 1; /* Allow this to take up remaining space */
+  flex: 1;
 }
 
 .management-task-list {
@@ -57,17 +62,18 @@
 
 .management-task-item {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr; /* Three columns: task name, tags, buttons */
-  justify-items: center; /* Center content in the middle column */
+  grid-template-columns: 1fr 2fr 1fr;
+  justify-items: center;
   align-items: center;
   margin: 10px 0;
   padding: 15px;
-  background-color: #414040;
+  background-color: #2e2e2e;
   border-radius: 8px;
+  color: #fff;
 }
 
 .task-name {
-  justify-self: start; /* Align task names to the left */
+  justify-self: start;
 }
 
 .task-tags {
@@ -78,7 +84,7 @@
 .button-group {
   display: flex;
   gap: 10px;
-  justify-self: end; /* Align buttons to the right */
+  justify-self: end;
 }
 
 .filter-section {
@@ -88,7 +94,7 @@
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px; /* Add gap between tag buttons */
+  gap: 3px;
 }
 
 .filter-tags button {
@@ -96,28 +102,33 @@
 }
 
 .tag-button.selected {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: white;
+}
+
+.tag-button:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
 }
 
 /* Responsive styles for screens smaller than 500px */
 @media (max-width: 500px) {
   .management-form {
     flex-direction: column;
-    align-items: stretch; /* Ensure form items stretch to fill available width */
+    align-items: stretch;
   }
 
   .management-label {
-    width: auto; /* Allow labels to take up only necessary space */
+    width: auto;
   }
 
   .management-input {
-    width: 100%; /* Make inputs full width */
+    width: 100%;
   }
 
   .tags-container {
     justify-content: flex-start;
-    gap: 5px; /* Slightly reduce gap for small screens */
+    gap: 5px;
   }
 
   .management-task-item {
@@ -128,7 +139,7 @@
 
   .task-tags {
     margin-top: 10px;
-    flex-wrap: wrap; /* Allow tags to wrap to new lines */
+    flex-wrap: wrap;
   }
 
   .button-group {
@@ -138,6 +149,6 @@
   }
 
   .management-button {
-    padding: 8px 15px; /* Reduce padding for small screens */
+    padding: 8px 15px;
   }
 }

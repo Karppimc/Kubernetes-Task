@@ -13,7 +13,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+  flex-wrap: wrap;
+}
+
+.summary-block:focus-within {
+  outline: 2px solid #ffbf00;
+  outline-offset: 4px;
 }
 
 .summary-row {
@@ -26,25 +31,34 @@
   margin: 0 1rem;
 }
 
+input[type="datetime-local"] {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+input[type="datetime-local"]:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
+}
+
 /* Responsive styles for screens smaller than 500px */
 @media (max-width: 500px) {
   .summary-main {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Align items to the left for readability */
+    align-items: flex-start;
   }
 
   .summary-block {
-    flex-direction: column; /* Stack task/tag details and total time */
-    align-items: flex-start; /* Align items to the start */
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .summary-cell {
-    margin: 0.5rem 0; /* Add margin between stacked items */
-  }
-
-  input[type="datetime-local"] {
-    width: 100%; /* Ensure input fields take full width on small screens */
-    margin-bottom: 1rem; /* Add space between inputs */
+    margin: 0.5rem 0;
   }
 }

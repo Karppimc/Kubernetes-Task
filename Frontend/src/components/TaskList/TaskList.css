@@ -1,4 +1,5 @@
 /* TaskList.css */
+
 .filter-section {
   margin-right: auto;
   max-width: 700px;
@@ -28,8 +29,9 @@
   align-items: center;
   margin: 10px 0;
   padding: 15px;
-  background-color: #414040;
+  background-color: #2e2e2e; /* Improved contrast */
   border-radius: 8px;
+  color: #fff;
 }
 
 .task-name {
@@ -45,6 +47,26 @@
   display: flex;
   gap: 10px;
   justify-self: end;
+}
+
+.task-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.task-button:hover {
+  background-color: #0056b3;
+}
+
+.task-button:focus {
+  outline: 2px solid #ffbf00;
+  outline-offset: 2px;
 }
 
 /* Responsive styles for screens smaller than 500px */

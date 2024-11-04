@@ -268,10 +268,12 @@ const TaskDetails = () => {
         <h2>Task Details</h2>
       </header>
       <main className="details-main">
-        <label>Select Task:</label>
+        <label htmlFor="task-select">Select Task:</label>
         <select
+          id="task-select"
           value={selectedTaskId || ''}
           onChange={(e) => handleTaskChange(e.target.value)}
+          aria-label="Select task to view details"
         >
           {tasks.map((task) => (
             <option key={task.id} value={task.id}>
@@ -281,17 +283,21 @@ const TaskDetails = () => {
         </select>
 
         <div>
-          <label>Start Time: </label>
+          <label htmlFor="start-time">Start Time: </label>
           <input
+            id="start-time"
             type="datetime-local"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            aria-label="Set start time for activity intervals"
           />
-          <label>End Time: </label>
+          <label htmlFor="end-time">End Time: </label>
           <input
+            id="end-time"
             type="datetime-local"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            aria-label="Set end time for activity intervals"
           />
         </div>
 
@@ -300,7 +306,7 @@ const TaskDetails = () => {
         <h3>Activity Intervals</h3>
         <table className="details-table">
           <thead>
-            <tr style={{ color: 'black' }}>
+            <tr>
               <th>Start</th>
               <th>Stop</th>
               <th>Actions</th>
@@ -309,26 +315,30 @@ const TaskDetails = () => {
           <tbody>
             {activityIntervals.map((interval, index) => (
               <tr key={interval.id} className={`${interval.hasOverlap ? 'overlap' : ''}`}>
-                <td style={{ color: 'black' }}>
+                <td>
                   <input
                     type="datetime-local"
                     value={formatToLocalDateTime(interval.start)}
                     onChange={(e) => handleEditInterval(index, 'start', e.target.value)}
+                    aria-label={`Edit start time for interval ${index + 1}`}
                   />
                 </td>
-                <td style={{ color: 'black' }}>
+                <td>
                   {interval.stop ? (
                     <input
                       type="datetime-local"
                       value={formatToLocalDateTime(interval.stop)}
                       onChange={(e) => handleEditInterval(index, 'stop', e.target.value)}
+                      aria-label={`Edit stop time for interval ${index + 1}`}
                     />
                   ) : (
                     <span>Ongoing</span>
                   )}
                 </td>
-                <td style={{ color: 'black' }}>
-                  <button onClick={() => handleDeleteInterval(index)}>Delete</button>
+                <td>
+                  <button onClick={() => handleDeleteInterval(index)} aria-label={`Delete interval ${index + 1}`}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -337,69 +347,71 @@ const TaskDetails = () => {
 
         <h3>Daily Active Times</h3>
         <Bar
-  data={{
-    labels: Object.keys(dailyActiveTimes),
-    datasets: [
-      {
-        label: 'Active Time (Hours and Minutes)',
-        data: Object.values(dailyActiveTimes).map((time) => {
-          const hours = Math.floor(time);
-          const minutes = Math.round((time - hours) * 60);
-          return hours + minutes / 60; // keep the value in decimal for chart scaling
-        }),
-        backgroundColor: 'rgba(100, 149, 237, 0.7)', // Custom color for bars
-      },
-    ],
-  }}
-  options={{
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: { display: true, text: 'Hours', color: 'black' },
-        ticks: { color: 'black' },
-      },
-      x: {
-        title: { display: true, text: 'Date', color: 'black' },
-        ticks: { color: 'black' },
-      },
-    },
-    plugins: {
-      legend: { labels: { color: 'black' } },
-      title: { display: true, text: 'Daily Active Times', color: 'black' },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const time = context.raw;
-            const hours = Math.floor(time);
-            const minutes = Math.round((time - hours) * 60);
-            return `${hours}h ${minutes}m`; // Display hours and minutes in tooltip
-          },
-        },
-      },
-    },
-  }}
-/>
-
-
+          data={{
+            labels: Object.keys(dailyActiveTimes),
+            datasets: [
+              {
+                label: 'Active Time (Hours and Minutes)',
+                data: Object.values(dailyActiveTimes).map((time) => {
+                  const hours = Math.floor(time);
+                  const minutes = Math.round((time - hours) * 60);
+                  return hours + minutes / 60;
+                }),
+                backgroundColor: 'rgba(100, 149, 237, 0.7)',
+              },
+            ],
+          }}
+          options={{
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Hours', color: 'black' },
+                ticks: { color: 'black' },
+              },
+              x: {
+                title: { display: true, text: 'Date', color: 'black' },
+                ticks: { color: 'black' },
+              },
+            },
+            plugins: {
+              legend: { labels: { color: 'black' } },
+              title: { display: true, text: 'Daily Active Times', color: 'black' },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const time = context.raw;
+                    const hours = Math.floor(time);
+                    const minutes = Math.round((time - hours) * 60);
+                    return `${hours}h ${minutes}m`;
+                  },
+                },
+              },
+            },
+          }}
+        />
 
         <h3>Add New Interval</h3>
         <div className="new-interval-inputs">
-          <label>Start: </label>
+          <label htmlFor="new-interval-start">Start: </label>
           <input
+            id="new-interval-start"
             type="datetime-local"
             value={newInterval.start}
             onChange={(e) => setNewInterval({ ...newInterval, start: e.target.value })}
+            aria-label="Set start time for new interval"
           />
-          <label>Stop: </label>
+          <label htmlFor="new-interval-stop">Stop: </label>
           <input
+            id="new-interval-stop"
             type="datetime-local"
             value={newInterval.stop}
             onChange={(e) => setNewInterval({ ...newInterval, stop: e.target.value })}
+            aria-label="Set stop time for new interval"
           />
-          <button onClick={handleAddInterval}>Add Interval</button>
+          <button onClick={handleAddInterval} aria-label="Add new interval">Add Interval</button>
         </div>
 
-        <button onClick={saveChanges}>Save Changes</button>
+        <button onClick={saveChanges} aria-label="Save all changes to intervals">Save Changes</button>
       </main>
     </div>
   );

@@ -225,12 +225,13 @@ const TaskManagement = () => {
                 className={`tag-button ${filterTags.includes(tag.id.toString()) ? 'selected' : ''}`}
                 onClick={() => toggleFilterTag(tag.id.toString())}
                 title={`${tag.id}. ${tag.name}`}
+                aria-label={`Filter by tag ${tag.name}`}
               >
                 {tag.id}
               </button>
             ))}
           </div>
-          <button className="management-button" onClick={resetFilters}>
+          <button className="management-button" onClick={resetFilters} aria-label="Reset Filters">
             Reset Filters
           </button>
         </section>
@@ -239,13 +240,15 @@ const TaskManagement = () => {
         <section className="management-form-section">
           <h3>Manage Your Tasks</h3>
           <form className="management-form" onSubmit={handleAddTask}>
-            <label className="management-label">Task Name:</label>
+            <label className="management-label" htmlFor="task-name">Task Name:</label>
             <input
               type="text"
+              id="task-name"
               className="management-input"
               placeholder="Enter task name"
               value={newTaskName}
               onChange={(e) => setNewTaskName(e.target.value)}
+              aria-label="Task Name"
             />
             <label className="management-label">Select Tags:</label>
 
@@ -256,30 +259,34 @@ const TaskManagement = () => {
                     type="checkbox"
                     checked={newTaskTags.includes(tag.id.toString())}
                     onChange={() => toggleTagSelection(tag.id.toString(), true)}
+                    aria-label={`Select tag ${tag.name}`}
                   />
                   {tag.name}
                 </label>
               ))}
             </div>
 
-            <button type="submit" className="management-button add-task-button">
+            <button type="submit" className="management-button add-task-button" aria-label="Add Task">
               Add Task
             </button>
           </form>
 
           <form className="management-form" onSubmit={(e) => e.preventDefault()}>
-            <label className="management-label">New Tag:</label>
+            <label className="management-label" htmlFor="new-tag">New Tag:</label>
             <input
               type="text"
+              id="new-tag"
               className="management-input"
               placeholder="Enter new tag"
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
+              aria-label="New Tag"
             />
             <button
               type="button"
               className="management-button"
               onClick={handleAddTag}
+              aria-label="Add Tag"
             >
               Add Tag
             </button>
@@ -291,7 +298,7 @@ const TaskManagement = () => {
           <h3>Existing Tasks</h3>
           <ul className="management-task-list">
             {filteredTasks.map((task) => (
-              <li key={task.id} className="management-task-item">
+              <li key={task.id} className="management-task-item" tabIndex={0} role="listitem">
                 {editTagsTaskId === task.id ? (
                   <>
                     <input
@@ -299,6 +306,7 @@ const TaskManagement = () => {
                       value={editTaskName}
                       onChange={(e) => setEditTaskName(e.target.value)}
                       className="edit-input"
+                      aria-label="Edit Task Name"
                     />
                     <div className="task-tags">
                       {allTags.map((tag) => (
@@ -307,6 +315,7 @@ const TaskManagement = () => {
                           className={`tag-button ${selectedTags.includes(tag.id.toString()) ? 'selected' : ''}`}
                           onClick={() => toggleTagSelection(tag.id.toString())}
                           title={`${tag.id}. ${tag.name}`}
+                          aria-label={`Toggle tag ${tag.name}`}
                         >
                           {tag.id}
                         </button>
@@ -315,6 +324,7 @@ const TaskManagement = () => {
                     <button
                       className="management-button"
                       onClick={() => handleUpdateTask(task.id)}
+                      aria-label="Save Changes"
                     >
                       Save
                     </button>
@@ -326,17 +336,17 @@ const TaskManagement = () => {
                       {task.tags.split(',').map((tagId) => {
                         const tagName = allTags.find((tag) => tag.id === parseInt(tagId))?.name || tagId;
                         return (
-                          <button key={tagId} className="tag-number" title={tagName}>
+                          <button key={tagId} className="tag-number" title={tagName} aria-label={`Tag ${tagName}`}>
                             {tagId}
                           </button>
                         );
                       })}
                     </div>
                     <div className="button-group">
-                      <button className="management-button" onClick={() => handleEditTags(task)}>
+                      <button className="management-button" onClick={() => handleEditTags(task)} aria-label="Edit Task">
                         Edit Task
                       </button>
-                      <button className="management-button" onClick={() => handleDeleteTask(task.id)}>
+                      <button className="management-button" onClick={() => handleDeleteTask(task.id)} aria-label="Delete Task">
                         Delete
                       </button>
                     </div>
