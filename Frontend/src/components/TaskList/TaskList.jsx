@@ -265,7 +265,7 @@ const TaskList = () => {
           {error && <p className="error-message">{error}</p>}
 
           <section className="filter-section">
-            <h3>Filter by Tags</h3>
+            <h3>Filter by Tags</h3><p>Hover over tags for more info</p>
             <div className="filter-tags">
               {Object.keys(tags).map(tagId => (
                 <button

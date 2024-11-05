@@ -10,10 +10,12 @@ const About = () => {
         <p>Santeri Karppinen</p>
 
         <h3>Instructions for Use</h3>
+        <p><b>Important note for Task Details page: You need to save the changes (Add,Delete,Edit) for them to update to backend</b></p>
         <p>
           This application is designed to track tasks and time spent on them. Using the intuitive UI, you can easily add, edit, and remove tasks.
-          Simply navigate through the menu to explore different features. If anything seems unclear, please refer to the tooltips provided.
+          Simply navigate through the menu to explore different features. When you hover over tag numbers, you can see what the tag's name is.
         </p>
+
 
         <h3>Content and Licenses</h3>
         <p>
@@ -27,7 +29,7 @@ const About = () => {
         <p>Estimated hours spent on this project: 40</p>
 
         <h3>Most Difficult Feature</h3>
-        <p>The most difficult feature to implement was the dynamic task filtering based on tags.</p>
+        <p>The most difficult feature to implement was task/timestamp fetching so that I wouldn't get SQL errors from the database.</p>
       </div>
     </div>
   );

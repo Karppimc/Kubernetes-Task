@@ -268,6 +268,10 @@ const TaskDetails = () => {
         <h2>Task Details</h2>
       </header>
       <main className="details-main">
+        <p><b>Select task you want to edit and Remember to save changes!</b></p>
+        <p>You can inspect/edit/delete/add intervals for tasks. <b>Inspect intervals via bar graph (below)</b></p>
+        <p><b>Pink intervals mean that you have overlapping intervals</b></p>
+
         <label htmlFor="task-select">Select Task:</label>
         <select
           id="task-select"
@@ -345,6 +349,29 @@ const TaskDetails = () => {
           </tbody>
         </table>
 
+        <h3>Add New Interval</h3>
+        <div className="new-interval-inputs">
+          <label htmlFor="new-interval-start">Start: </label>
+          <input
+            id="new-interval-start"
+            type="datetime-local"
+            value={newInterval.start}
+            onChange={(e) => setNewInterval({ ...newInterval, start: e.target.value })}
+            aria-label="Set start time for new interval"
+          />
+          <label htmlFor="new-interval-stop">Stop: </label>
+          <input
+            id="new-interval-stop"
+            type="datetime-local"
+            value={newInterval.stop}
+            onChange={(e) => setNewInterval({ ...newInterval, stop: e.target.value })}
+            aria-label="Set stop time for new interval"
+          />
+          <button onClick={handleAddInterval} aria-label="Add new interval">Add Interval</button>
+        </div>
+
+        <button onClick={saveChanges} aria-label="Save all changes to intervals">Save Changes</button>
+
         <h3>Daily Active Times</h3>
         <Bar
           data={{
@@ -389,32 +416,10 @@ const TaskDetails = () => {
             },
           }}
         />
-
-        <h3>Add New Interval</h3>
-        <div className="new-interval-inputs">
-          <label htmlFor="new-interval-start">Start: </label>
-          <input
-            id="new-interval-start"
-            type="datetime-local"
-            value={newInterval.start}
-            onChange={(e) => setNewInterval({ ...newInterval, start: e.target.value })}
-            aria-label="Set start time for new interval"
-          />
-          <label htmlFor="new-interval-stop">Stop: </label>
-          <input
-            id="new-interval-stop"
-            type="datetime-local"
-            value={newInterval.stop}
-            onChange={(e) => setNewInterval({ ...newInterval, stop: e.target.value })}
-            aria-label="Set stop time for new interval"
-          />
-          <button onClick={handleAddInterval} aria-label="Add new interval">Add Interval</button>
-        </div>
-
-        <button onClick={saveChanges} aria-label="Save all changes to intervals">Save Changes</button>
       </main>
     </div>
   );
+
 };
 
 export default TaskDetails;

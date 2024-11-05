@@ -217,7 +217,7 @@ const TaskManagement = () => {
 
         {/* Tag Filter Section */}
         <section className="filter-section">
-          <h3>Filter by Tags</h3>
+          <h3>Filter by Tags</h3><p>Hover over tags for more info</p>
           <div className="filter-tags">
             {allTags.map((tag) => (
               <button
