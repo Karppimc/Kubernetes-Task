@@ -1,27 +1,27 @@
 /* TaskList.css */
-
+/* Section for filtering tasks by tags */
 .filter-section {
   margin-right: auto;
   max-width: 700px;
   text-align: left;
 }
-
+/* Layout for filter tags within the filter section */
 .filter-tags {
   display: flex;
   gap: 10px;
   justify-content: start;
   flex-wrap: wrap;
 }
-
+/* Wrapper for the task list, adding top margin */
 .task-list-wrapper {
   margin-top: 20px;
 }
-
+/* Styles for the task list container */
 .task-list {
   list-style-type: none;
   padding: 0;
 }
-
+/* Styling for each individual task item */
 .task-item {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr; /* Task name, tags, buttons */
@@ -33,22 +33,22 @@
   border-radius: 8px;
   color: #fff;
 }
-
+/* Align task name to the start of the row */
 .task-name {
   justify-self: start;
 }
-
+/* Layout for tags within each task item */
 .task-tags {
   display: flex;
   gap: 10px;
 }
-
+/* Button group within each task item */
 .button-group {
   display: flex;
   gap: 10px;
   justify-self: end;
 }
-
+/* Styling for task action buttons (e.g., start, stop, delete) */
 .task-button {
   background-color: #007bff;
   color: #fff;
@@ -60,11 +60,11 @@
   transition: background-color 0.3s ease;
   margin-top: 10px;
 }
-
+/* Hover effect for task buttons */
 .task-button:hover {
   background-color: #0056b3;
 }
-
+/* Focus outline for task buttons to improve accessibility */
 .task-button:focus {
   outline: 2px solid #ffbf00;
   outline-offset: 2px;
@@ -77,18 +77,18 @@
     flex-direction: column;
     align-items: flex-start;
   }
-
+    /* Wrap tags within task items */
   .task-tags {
     flex-wrap: wrap;
     margin-top: 10px;
   }
-
+    /* Adjust button group layout for smaller screens */
   .button-group {
     justify-content: space-between;
     width: 100%;
     margin-top: 10px;
   }
-
+    /* Adjust font size and margin for task name */
   .task-name {
     font-size: 1rem;
     margin-bottom: 5px;

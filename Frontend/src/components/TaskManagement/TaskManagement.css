@@ -1,14 +1,14 @@
 /* TaskManagement.css */
-
+/* Main padding for the task management content */
 .management-main {
   padding: 20px;
 }
-
+/* Sections for form and task list spacing */
 .management-form-section,
 .task-list-section {
   margin-bottom: 30px;
 }
-
+/* Styles for the management form layout */
 .management-form {
   display: flex;
   flex-wrap: wrap;
@@ -17,19 +17,19 @@
   align-items: center;
 
 }
-
+/* Label styles for the management form */
 .management-label {
   font-weight: bold;
   width: 100px;
 }
-
+/* Input field styling within the form */
 .management-input {
   flex: 1;
   padding: 8px;
   min-width: 0;
   margin-top: 10px;
 }
-
+/* Button styling for management actions */
 .management-button {
   padding: 10px 20px;
   cursor: pointer;
@@ -41,16 +41,16 @@
   white-space: nowrap;
   margin-top: 10px;
 }
-
+/* Hover effect for management buttons */
 .management-button:hover {
   background-color: #0056b3;
 }
-
+/* Focus outline for accessibility */
 .management-button:focus {
   outline: 2px solid #ffbf00;
   outline-offset: 2px;
 }
-
+/* Container for displaying tags in the form */
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -58,12 +58,12 @@
   flex: 1;
 
 }
-
+/* Task list container styling */
 .management-task-list {
   list-style-type: none;
   padding: 0;
 }
-
+/* Styling for each task item in the list */
 .management-task-item {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
@@ -75,42 +75,42 @@
   border-radius: 8px;
   color: #fff;
 }
-
+/* Align task name to the start of the row */
 .task-name {
   justify-self: start;
 }
-
+/* Container for tags within each task item */
 .task-tags {
   display: flex;
   gap: 10px;
 }
-
+/* Button group styling for task actions */
 .button-group {
   display: flex;
   gap: 10px;
   justify-self: end;
 
 }
-
+/* Filter section layout and spacing */
 .filter-section {
   margin-bottom: 20px;
 }
-
+/* Layout for tag filter buttons */
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
 }
-
+/* Individual filter tag button spacing */
 .filter-tags button {
   margin-right: 5px;
 }
-
+/* Styling for selected filter tags */
 .tag-button.selected {
   background-color: #0056b3;
   color: white;
 }
-
+/* Focus outline for tag buttons for accessibility */
 .tag-button:focus {
   outline: 2px solid #ffbf00;
   outline-offset: 2px;
@@ -122,7 +122,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-
+  /* Allow labels to resize */
   .management-label {
     width: auto;
   }
@@ -152,7 +152,7 @@
     width: 100%;
     margin-top: 10px;
   }
-
+  /* Adjust button padding on smaller screens */
   .management-button {
     padding: 8px 15px;
   }

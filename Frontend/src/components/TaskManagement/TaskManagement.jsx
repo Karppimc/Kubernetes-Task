@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './TaskManagement.css';
 
 const TaskManagement = () => {
+  // State variables to manage tasks, task inputs, tags, error messages, and filters
   const [tasks, setTasks] = useState([]);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskTags, setNewTaskTags] = useState([]); // Updated to store selected tags
@@ -16,7 +17,7 @@ const TaskManagement = () => {
 
   useEffect(() => {
     let isMounted = true; // Flag to check if the component is mounted
-
+    // Fetch tasks and tags from backend
     const fetchTasksAndTags = async () => {
       if (isMounted) {
         await fetchTasks();
@@ -31,7 +32,7 @@ const TaskManagement = () => {
     };
   }, []);
 
-  // Fetch tasks from the backend
+  // Fetch all tasks from the backend
   const fetchTasks = async () => {
     try {
       const response = await fetch('http://localhost:3010/tasks');
@@ -59,7 +60,7 @@ const TaskManagement = () => {
     }
   };
 
-  // Add a new task
+  // Add a new task to the task list
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTaskName) {
@@ -96,7 +97,7 @@ const TaskManagement = () => {
     }
   };
 
-  // Add a new tag
+   // Add a new tag to the tags list
   const handleAddTag = async () => {
     if (!newTagName) {
       alert('Tag name is required');
@@ -118,14 +119,14 @@ const TaskManagement = () => {
         throw new Error('Failed to add tag');
       }
 
-      fetchTags();
+      fetchTags();  // Refresh tag list after adding
       setNewTagName('');
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // Delete a task
+  // Delete a task from the task list
   const handleDeleteTask = async (taskId) => {
     try {
       const response = await fetch(`http://localhost:3010/tasks/${taskId}`, {
@@ -136,13 +137,13 @@ const TaskManagement = () => {
         throw new Error('Failed to delete task');
       }
 
-      fetchTasks();
+      fetchTasks(); // Refresh tasks list after deletion
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // Update tags and task name for a specific task
+  // Update task name and tags for a specific task
   const handleUpdateTask = async (taskId) => {
     try {
       const response = await fetch(`http://localhost:3010/tasks/${taskId}`, {
@@ -164,7 +165,7 @@ const TaskManagement = () => {
     }
   };
 
-  // Toggle tag selection for a task
+   // Toggle selection of tags when adding or editing a task
   const toggleTagSelection = (tagId, isAddingNewTask = false) => {
     if (isAddingNewTask) {
       setNewTaskTags((prevSelectedTags) =>
@@ -181,14 +182,14 @@ const TaskManagement = () => {
     }
   };
 
-  // Handle tag editing mode
+  // Enable tag editing mode for a specific task
   const handleEditTags = (task) => {
     setEditTagsTaskId(task.id);
     setEditTaskName(task.name);
     setSelectedTags(task.tags.split(',').map((tag) => tag.trim()));
   };
 
-  // Toggle tag filter selection
+  // Toggle tag selection for filtering tasks
   const toggleFilterTag = (tagId) => {
     setFilterTags((prevFilterTags) =>
       prevFilterTags.includes(tagId)
@@ -197,7 +198,7 @@ const TaskManagement = () => {
     );
   };
 
-  // Filter tasks based on selected tags
+   // Filter tasks based on selected tags
   const filteredTasks = filterTags.length > 0
     ? tasks.filter((task) => filterTags.every((tag) => task.tags.split(',').includes(tag)))
     : tasks;

@@ -1,9 +1,10 @@
 /* TimeSummary.css */
+/* Styles for the container displaying the summary table */
 .summary-table {
   width: 100%;
   margin-top: 1rem;
 }
-
+/* Styles for each summary block, which contains task or tag details */
 .summary-block {
   background-color: #2f2f2f;
   color: #ffffff;
@@ -15,22 +16,22 @@
   align-items: center;
   flex-wrap: wrap;
 }
-
+/* Focus outline for accessibility when navigating within a block */
 .summary-block:focus-within {
   outline: 2px solid #ffbf00;
   outline-offset: 4px;
 }
-
+/* Styles for each row within a summary block */
 .summary-row {
   display: flex;
   justify-content: space-between;
   width: 100%;
 }
-
+/* Styles for individual cells within each summary row */
 .summary-cell {
   margin: 0 1rem;
 }
-
+/* Styles for the datetime-local input fields */
 input[type="datetime-local"] {
   padding: 0.5rem;
   margin-bottom: 1rem;
@@ -39,7 +40,7 @@ input[type="datetime-local"] {
   border-radius: 5px;
   width: 100%;
 }
-
+/* Focus outline for datetime-local inputs, for better accessibility */
 input[type="datetime-local"]:focus {
   outline: 2px solid #ffbf00;
   outline-offset: 2px;

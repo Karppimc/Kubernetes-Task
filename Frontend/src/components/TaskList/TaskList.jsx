@@ -3,46 +3,50 @@ import './TaskList.css';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
+// TaskList component to display, manage, and filter tasks
 const TaskList = () => {
+  // State variables for task data, tags, filter tags, active tasks, and errors
   const [tasks, setTasks] = useState([]);
   const [tags, setTags] = useState({});
   const [filterTags, setFilterTags] = useState([]);
   const [activeTasks, setActiveTasks] = useState([]); // Track active tasks
   const [error, setError] = useState(null);
 
-  // Track component mount status
+  // Ref to track if component is still mounted, helps in cleanup
   const isMounted = React.useRef(true);
 
-  // Fetch tasks, tags, and active tasks from the backend
+  // Fetch tasks, tags, and active tasks from the backend API
   const fetchData = async () => {
     try {
+      // Fetch tasks from server
       const taskResponse = await fetch('http://localhost:3010/tasks');
       if (!taskResponse.ok) throw new Error('Failed to fetch tasks');
       const taskData = await taskResponse.json();
-
+      // Fetch tags from server
       const tagResponse = await fetch('http://localhost:3010/tags');
       if (!tagResponse.ok) throw new Error('Failed to fetch tags');
       const tagData = await tagResponse.json();
-
+      // Fetch timestamps from server to determine active tasks
       const timestampResponse = await fetch('http://localhost:3010/timestamps');
       if (!timestampResponse.ok) throw new Error('Failed to fetch timestamps');
       const timestampData = await timestampResponse.json();
 
       if (isMounted.current) {
+        // Retrieve and apply saved task order from localStorage
         const savedOrder = JSON.parse(localStorage.getItem('taskOrder'));
         const orderedTasks = savedOrder
           ? savedOrder.map(id => taskData.find(task => task.id === id)).filter(Boolean)
           : taskData;
         setTasks(orderedTasks);
 
-        // Map tags into an object
+        // Map tags to an object for easier access
         const tagsMap = {};
         tagData.forEach((tag) => {
           tagsMap[tag.id] = tag.name;
         });
         setTags(tagsMap);
 
-        // Filter active tasks (tasks with type 0 without a type 1 after them)
+        // Determine active tasks by filtering timestamps for tasks without a stop timestamp
         const activeTaskIds = timestampData
           .filter((timestamp) => timestamp.type === 0)
           .filter(
@@ -59,20 +63,20 @@ const TaskList = () => {
         setActiveTasks(activeTaskIds);
       }
     } catch (error) {
-      if (isMounted.current) setError(error.message);
+      if (isMounted.current) setError(error.message); // Set error if component is still mounted
     }
   };
-
+  // Fetch data when the component mounts
   useEffect(() => {
     isMounted.current = true;
-    fetchData(); // Fetch data when the component mounts
+    fetchData();
 
     return () => {
       isMounted.current = false; // Cleanup on unmount
     };
   }, []); // Empty dependency array ensures this effect runs only once
 
-  // Handle task deletion
+  // Delete a task and update the UI state
   const handleDeleteTask = async taskId => {
     try {
       const response = await fetch(`http://localhost:3010/tasks/${taskId}`, {
@@ -83,7 +87,7 @@ const TaskList = () => {
         throw new Error('Failed to delete task');
       }
 
-      // Update UI state locally after deletion
+      // Remove the task from local state after deletion
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
       setActiveTasks(prevActiveTasks =>
         prevActiveTasks.filter(activeTaskId => activeTaskId !== taskId)
@@ -93,7 +97,7 @@ const TaskList = () => {
     }
   };
 
-  // Handle task start
+  // Start a task by adding a start timestamp
   const handleStartTask = async taskId => {
     try {
       const response = await fetch('http://localhost:3010/timestamps', {
@@ -111,14 +115,14 @@ const TaskList = () => {
       if (!response.ok) {
         throw new Error('Failed to start task');
       }
-
+      // Add task ID to activeTasks list
       setActiveTasks(prevActiveTasks => [...prevActiveTasks, taskId]);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  // Handle task stop
+  // Stop a task by adding a stop timestamp
   const handleStopTask = async taskId => {
     try {
       const response = await fetch('http://localhost:3010/timestamps', {
@@ -136,7 +140,7 @@ const TaskList = () => {
       if (!response.ok) {
         throw new Error('Failed to stop task');
       }
-
+      // Remove task ID from activeTasks list
       setActiveTasks(prevActiveTasks =>
         prevActiveTasks.filter(activeTaskId => activeTaskId !== taskId)
       );
@@ -145,7 +149,7 @@ const TaskList = () => {
     }
   };
 
-  // Toggle tag filter selection
+  // Toggle the selection of a filter tag
   const toggleFilterTag = tagId => {
     setFilterTags(prevFilterTags =>
       prevFilterTags.includes(tagId)
@@ -161,26 +165,26 @@ const TaskList = () => {
       )
     : tasks;
 
-  // Reset tag filters
+   // Reset all tag filters
   const resetFilters = () => {
     setFilterTags([]);
   };
 
-  // Task drag and drop handlers
+  // Reorder tasks in the list through drag-and-drop
   const moveTask = (dragIndex, hoverIndex) => {
     const updatedTasks = [...tasks];
     const [draggedTask] = updatedTasks.splice(dragIndex, 1);
     updatedTasks.splice(hoverIndex, 0, draggedTask);
     setTasks(updatedTasks);
 
-    // Save the updated order to localStorage
+    // Save updated task order to localStorage
     localStorage.setItem('taskOrder', JSON.stringify(updatedTasks.map(task => task.id)));
   };
-
+  // Component to represent an individual task item, with drag-and-drop capability
   const TaskItem = ({ task, index, moveTask }) => {
     const ref = React.useRef(null);
     const isActive = activeTasks.includes(task.id); // Check if task is active
-
+    // Setup drop behavior for drag-and-drop
     const [, drop] = useDrop({
       accept: 'task',
       hover(item) {
@@ -195,7 +199,7 @@ const TaskList = () => {
         item.index = hoverIndex;
       },
     });
-
+    // Setup drag behavior for drag-and-drop
     const [{ isDragging }, drag] = useDrag({
       type: 'task',
       item: { type: 'task', index },
@@ -203,7 +207,7 @@ const TaskList = () => {
         isDragging: monitor.isDragging(),
       }),
     });
-
+    // Combine drag and drop refs
     drag(drop(ref));
 
     return (
@@ -215,6 +219,7 @@ const TaskList = () => {
       >
         <span className="task-name">{task.name}</span>
         <div className="task-tags">
+          {/* Display tags for each task */}
           {task.tags.split(',').map(tagId => (
             <button
               key={tagId}
@@ -227,6 +232,7 @@ const TaskList = () => {
           ))}
         </div>
         <div className="button-group">
+          {/* Start button for task */}
           <button
             className={`task-button ${isActive ? 'active' : ''}`}
             onClick={() => handleStartTask(task.id)}
@@ -235,6 +241,7 @@ const TaskList = () => {
           >
             {isActive ? 'Running' : 'Start'}
           </button>
+          {/* Stop button for task */}
           <button
             className="task-button"
             onClick={() => handleStopTask(task.id)}
@@ -243,6 +250,7 @@ const TaskList = () => {
           >
             Stop
           </button>
+          {/* Delete button for task */}
           <button
             className="task-button"
             onClick={() => handleDeleteTask(task.id)}
@@ -262,8 +270,9 @@ const TaskList = () => {
           <h2>Your Tasks</h2>
         </header>
         <main className="task-main">
+          {/* Display error message if any */}
           {error && <p className="error-message">{error}</p>}
-
+          {/* Tag filter section */}
           <section className="filter-section">
             <h3>Filter by Tags</h3><p>Hover over tags for more info</p>
             <div className="filter-tags">
@@ -285,7 +294,7 @@ const TaskList = () => {
               Reset Filters
             </button>
           </section>
-
+          {/* Task list with drag-and-drop capability */}
           <div className="task-list-wrapper">
             <ul className="task-list" role="list">
               {filteredTasks.map((task, index) => (
