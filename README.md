@@ -49,7 +49,7 @@ This project is a **Task Details Tracker** web application that allows users to 
 ### Installation
 
 1. Clone the repository.
-2. Navigate to the project directory: cd Tamk-Fullstack
+2. Navigate to the project directory: cd Task-Tracker
 3. npm install both front & Back end
 4. npm run dev @ Front
 5. npm run start @ Back
