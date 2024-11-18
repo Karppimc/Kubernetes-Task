@@ -1,8 +1,8 @@
-# Task Details Tracker
+# Task Tracker
 
-This project is a **Task Details Tracker** web application that allows users to manage tasks and their associated time intervals effectively.
-- Frontend is done by me with React
-- Backend was provided by our teacher, added here for reference
+This project is a **Task Tracker** web application that allows users to manage tasks and their associated time intervals effectively.
+- Frontend is done with React
+- Backend was provided by our teacher, added here for reference. Express, sqlite
 
 ## Features
 
