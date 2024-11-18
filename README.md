@@ -14,7 +14,7 @@ This project is a **Task Details Tracker** web application that allows users to 
 
   
 
-- **Task Management**
+  ### Task Management
   - View a list of tasks fetched from the backend.
   - Add Tasks and give it tags that describe it
   - Add new Tags
@@ -23,13 +23,13 @@ This project is a **Task Details Tracker** web application that allows users to 
     ![image](https://github.com/user-attachments/assets/d9f19f7b-c03d-4b43-ab7d-6ae616a91fba)
 
 
-- **Time Summary**
+  ### Time Summary
 - Shows summary for time spent in each Task and Tag (Hours and minutes)
 - You can specify time interval
   ![image](https://github.com/user-attachments/assets/a85e52a7-fc2e-43dd-bc2a-c6c0400305e6)
 
  
-- **Task Details**
+### Task Details
   - Display activity intervals (start and stop times) for the selected task.
   - Highlight overlapping intervals for better visibility.
   - Support for ongoing tasks with `Ongoing` label in the stop time column.
@@ -39,7 +39,7 @@ This project is a **Task Details Tracker** web application that allows users to 
     ![image](https://github.com/user-attachments/assets/c6837fed-c72e-4153-b926-6b1a8fc7aa52)
     ![image](https://github.com/user-attachments/assets/ac69c70c-ed99-40f4-a56e-cf61fffd10a6)
 
-- **About page**
+  ### About page
 - Shows more info about this project
 
 
