@@ -6,7 +6,7 @@ This project is a **Task Details Tracker** web application that allows users to 
 
 ## Features
 
-# Task List
+### Task List
 - Start/Stop/Delete tasks
 - Filter task with tags
 - Drag & Drop tasks to put them in any order you want
