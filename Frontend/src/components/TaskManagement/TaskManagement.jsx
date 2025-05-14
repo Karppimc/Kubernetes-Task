@@ -32,138 +32,135 @@ const TaskManagement = () => {
     };
   }, []);
 
-  // Fetch all tasks from the backend
   const fetchTasks = async () => {
-    try {
-      const response = await fetch('http://localhost:3010/tasks');
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
-      }
-      const data = await response.json();
-      setTasks(data);
-    } catch (err) {
-      setError(err.message);
+  try {
+    const response = await fetch('/api/tasks');
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks');
     }
-  };
+    const data = await response.json();
+    setTasks(data);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-  // Fetch all tags from the backend
-  const fetchTags = async () => {
-    try {
-      const response = await fetch('http://localhost:3010/tags');
-      if (!response.ok) {
-        throw new Error('Failed to fetch tags');
-      }
-      const data = await response.json();
-      setAllTags(data); // Store all available tags
-    } catch (err) {
-      setError(err.message);
+const fetchTags = async () => {
+  try {
+    const response = await fetch('/api/tags');
+    if (!response.ok) {
+      throw new Error('Failed to fetch tags');
     }
-  };
+    const data = await response.json();
+    setAllTags(data);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-  // Add a new task to the task list
-  const handleAddTask = async (e) => {
-    e.preventDefault();
-    if (!newTaskName) {
-      alert('Task name is required');
-      return;
-    }
+const handleAddTask = async (e) => {
+  e.preventDefault();
+  if (!newTaskName) {
+    alert('Task name is required');
+    return;
+  }
 
-    if (newTaskTags.length === 0) {
-      alert('At least one tag must be selected');
-      return;
-    }
+  if (newTaskTags.length === 0) {
+    alert('At least one tag must be selected');
+    return;
+  }
 
-    try {
-      const response = await fetch('http://localhost:3010/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newTaskName,
-          tags: newTaskTags.join(','), // Use the selected tags
-        }),
-      });
+  try {
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: newTaskName,
+        tags: newTaskTags.join(','),
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to add task');
-      }
-
-      fetchTasks(); // Refresh task list after adding a new task
-      setNewTaskName(''); // Reset task name input
-      setNewTaskTags([]); // Clear selected tags after submission
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-   // Add a new tag to the tags list
-  const handleAddTag = async () => {
-    if (!newTagName) {
-      alert('Tag name is required');
-      return;
+    if (!response.ok) {
+      throw new Error('Failed to add task');
     }
 
-    try {
-      const response = await fetch('http://localhost:3010/tags', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: newTagName,
-        }),
-      });
+    fetchTasks();
+    setNewTaskName('');
+    setNewTaskTags([]);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-      if (!response.ok) {
-        throw new Error('Failed to add tag');
-      }
+const handleAddTag = async () => {
+  if (!newTagName) {
+    alert('Tag name is required');
+    return;
+  }
 
-      fetchTags();  // Refresh tag list after adding
-      setNewTagName('');
-    } catch (err) {
-      setError(err.message);
+  try {
+    const response = await fetch('/api/tags', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: newTagName,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add tag');
     }
-  };
 
-  // Delete a task from the task list
-  const handleDeleteTask = async (taskId) => {
-    try {
-      const response = await fetch(`http://localhost:3010/tasks/${taskId}`, {
-        method: 'DELETE',
-      });
+    fetchTags();
+    setNewTagName('');
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-      if (!response.ok) {
-        throw new Error('Failed to delete task');
-      }
+const handleDeleteTask = async (taskId) => {
+  try {
+    const response = await fetch(`/api/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
 
-      fetchTasks(); // Refresh tasks list after deletion
-    } catch (err) {
-      setError(err.message);
+    if (!response.ok) {
+      throw new Error('Failed to delete task');
     }
-  };
 
-  // Update task name and tags for a specific task
-  const handleUpdateTask = async (taskId) => {
-    try {
-      const response = await fetch(`http://localhost:3010/tasks/${taskId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: editTaskName, tags: selectedTags.join(',') }),
-      });
+    fetchTasks();
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
+const handleUpdateTask = async (taskId) => {
+  try {
+    const response = await fetch(`/api/tasks/${taskId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: editTaskName,
+        tags: selectedTags.join(','),
+      }),
+    });
 
-      setEditTagsTaskId(null);
-      fetchTasks();
-    } catch (err) {
-      setError(err.message);
+    if (!response.ok) {
+      throw new Error('Failed to update task');
     }
-  };
+
+    setEditTagsTaskId(null);
+    fetchTasks();
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
    // Toggle selection of tags when adding or editing a task
   const toggleTagSelection = (tagId, isAddingNewTask = false) => {

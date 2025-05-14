@@ -3,11 +3,9 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, LinearScale, CategoryScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import './TaskDetails.css';
 
-// Registering necessary Chart.js components for the bar chart
 Chart.register(LinearScale, CategoryScale, BarElement, Title, Tooltip, Legend);
 
 const TaskDetails = () => {
-  // State variables to manage tasks, selected task, time range, intervals, error messages, and chart data
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState(localStorage.getItem('lastSelectedTask') || null);
   const [startTime, setStartTime] = useState('2024-10-01T12:00');
@@ -18,24 +16,21 @@ const TaskDetails = () => {
   const [debounceTimeout, setDebounceTimeout] = useState(null);
   const [dailyActiveTimes, setDailyActiveTimes] = useState({});
 
-  // Helper function to get the end of the day time, adjusted to local time
   function getEndOfDayTime() {
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 0, 0);
     endOfDay.setMinutes(endOfDay.getMinutes() - endOfDay.getTimezoneOffset());
     return endOfDay.toISOString().slice(0, 16);
   }
-  // Helper function to format date to local date-time string
+
   function formatToLocalDateTime(date) {
     const adjustedDate = new Date(date);
     adjustedDate.setMinutes(adjustedDate.getMinutes() - adjustedDate.getTimezoneOffset());
     return adjustedDate.toISOString().slice(0, 16);
   }
 
-  // Calculates active times for each day based on intervals
   const calculateDailyActiveTimes = () => {
     const dailySummary = {};
-
     const taskIntervals = activityIntervals.filter(interval => interval.taskId === Number(selectedTaskId));
 
     taskIntervals.forEach((interval) => {
@@ -45,8 +40,6 @@ const TaskDetails = () => {
       const stopDate = new Date(interval.stop);
       let currentDate = new Date(startDate);
 
-      console.log(`Processing interval from ${startDate} to ${stopDate}`);
-      // Calculate time spent per day in the interval
       while (currentDate <= stopDate) {
         const dayKey = currentDate.toISOString().slice(0, 10);
 
@@ -68,10 +61,10 @@ const TaskDetails = () => {
 
     setDailyActiveTimes(dailySummary);
   };
-  // Fetches activity intervals from the server, filters, and formats them based on user-selected time range and task
+
   const fetchActivityIntervals = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:3010/timestamps');
+      const response = await fetch('/api/timestamps');
       if (!response.ok) throw new Error('Failed to fetch timestamps');
       const timestamps = await response.json();
 
@@ -122,19 +115,18 @@ const TaskDetails = () => {
       }
 
       filteredIntervals.sort((a, b) => a.start - b.start);
-      console.log("Filtered Activity Intervals:", filteredIntervals);
       setActivityIntervals(checkForOverlaps(filteredIntervals));
     } catch (err) {
       setError(err.message);
     }
   }, [selectedTaskId, startTime, endTime]);
-  // Update daily active times whenever intervals are changed
+
   useEffect(() => {
     if (activityIntervals.length > 0) {
       calculateDailyActiveTimes();
     }
   }, [activityIntervals]);
-  // Debounced effect to fetch intervals when task, start time, or end time changes
+
   useEffect(() => {
     if (!selectedTaskId) return;
     if (debounceTimeout) clearTimeout(debounceTimeout);
@@ -146,11 +138,11 @@ const TaskDetails = () => {
     setDebounceTimeout(timeout);
     return () => clearTimeout(timeout);
   }, [selectedTaskId, startTime, endTime, fetchActivityIntervals]);
-  // Fetches tasks from the server and sets the initial task selection
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch('http://localhost:3010/tasks');
+        const response = await fetch('/api/tasks');
         if (!response.ok) throw new Error('Failed to fetch tasks');
         const tasksData = await response.json();
         setTasks(tasksData);
@@ -166,12 +158,12 @@ const TaskDetails = () => {
     };
     fetchTasks();
   }, []);
-  // Handles task selection change, saves the selected task in local storage
+
   const handleTaskChange = (taskId) => {
     setSelectedTaskId(taskId);
     localStorage.setItem('lastSelectedTask', taskId);
   };
-  // Checks for overlapping intervals within the provided list
+
   const checkForOverlaps = (intervals) => {
     const updatedIntervals = intervals.map((interval, index, array) => {
       if (index > 0 && array[index - 1].stop > interval.start) {
@@ -182,7 +174,7 @@ const TaskDetails = () => {
     });
     return updatedIntervals;
   };
-  // Adds a new interval with start and stop times, checking for validation and overlap
+
   const handleAddInterval = () => {
     if (!newInterval.start || !newInterval.stop) {
       setError('Please enter both start and stop times for the new interval.');
@@ -204,7 +196,7 @@ const TaskDetails = () => {
     setActivityIntervals(checkForOverlaps(updatedIntervals));
     setNewInterval({ start: '', stop: '' });
   };
-  // Edits a specific interval, setting it as modified for tracking purposes
+
   const handleEditInterval = (index, field, value) => {
     const updatedIntervals = [...activityIntervals];
     updatedIntervals[index][field] = new Date(value);
@@ -212,28 +204,28 @@ const TaskDetails = () => {
 
     setActivityIntervals(checkForOverlaps(updatedIntervals.sort((a, b) => a.start - b.start)));
   };
-  // Saves changes to the intervals by making API requests based on interval type
+
   const saveChanges = async () => {
     try {
       for (const interval of activityIntervals) {
         if (interval.isNew) {
-          await fetch('http://localhost:3010/timestamps', {
+          await fetch('/api/timestamps', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ task: selectedTaskId, timestamp: interval.start.toISOString(), type: 0 }),
           });
-          await fetch('http://localhost:3010/timestamps', {
+          await fetch('/api/timestamps', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ task: selectedTaskId, timestamp: interval.stop.toISOString(), type: 1 }),
           });
         } else if (interval.isModified) {
-          await fetch(`http://localhost:3010/timestamps/${interval.startId}`, {
+          await fetch(`/api/timestamps/${interval.startId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ task: selectedTaskId, timestamp: interval.start.toISOString(), type: 0 }),
           });
-          await fetch(`http://localhost:3010/timestamps/${interval.stopId}`, {
+          await fetch(`/api/timestamps/${interval.stopId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ task: selectedTaskId, timestamp: interval.stop.toISOString(), type: 1 }),
@@ -247,13 +239,13 @@ const TaskDetails = () => {
       setError('Failed to save changes');
     }
   };
-  // Deletes an interval, also removes it from the server if it was previously saved
+
   const handleDeleteInterval = async (index) => {
     const intervalToDelete = activityIntervals[index];
     if (!intervalToDelete.isNew) {
       try {
-        await fetch(`http://localhost:3010/timestamps/${intervalToDelete.startId}`, { method: 'DELETE' });
-        await fetch(`http://localhost:3010/timestamps/${intervalToDelete.stopId}`, { method: 'DELETE' });
+        await fetch(`/api/timestamps/${intervalToDelete.startId}`, { method: 'DELETE' });
+        await fetch(`/api/timestamps/${intervalToDelete.stopId}`, { method: 'DELETE' });
       } catch (error) {
         setError('Failed to delete interval');
         return;
