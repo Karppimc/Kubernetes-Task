@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './TaskManagement.css';
 
 const TaskManagement = () => {
@@ -7,7 +7,6 @@ const TaskManagement = () => {
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskTags, setNewTaskTags] = useState([]); // Updated to store selected tags
   const [newTagName, setNewTagName] = useState('');
-  const [editTaskId, setEditTaskId] = useState(null);
   const [editTaskName, setEditTaskName] = useState('');
   const [allTags, setAllTags] = useState([]);
   const [error, setError] = useState(null);

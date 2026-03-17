@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './TimeSummary.css';
 
 const TimeSummary = () => {
-  const [tasks, setTasks] = useState([]);
-  const [tags, setTags] = useState({});
   const [startTime, setStartTime] = useState('2024-10-01T12:00');
   const [endTime, setEndTime] = useState(getLocalTime());
   const [taskSummary, setTaskSummary] = useState([]);
@@ -131,8 +129,6 @@ const TimeSummary = () => {
           return acc;
         }, {});
 
-        setTasks(tasksList);
-        setTags(tagsMap);
         calculateTaskSummary(timestamps, tasksList);
         calculateTagSummary(timestamps, tasksList, tagsMap);
       } catch (error) {
