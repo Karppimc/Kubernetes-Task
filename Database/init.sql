@@ -1,0 +1,67 @@
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS timestamps;
+DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS options;
+
+-- Create table: tags
+CREATE TABLE tags (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+-- Create table: tasks
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  tags TEXT
+);
+
+-- Create table: timestamps
+CREATE TABLE timestamps (
+  id SERIAL PRIMARY KEY,
+  timestamp TIMESTAMP NOT NULL,
+  task INTEGER REFERENCES tasks(id),
+  type INTEGER NOT NULL -- 0=start, 1=stop
+);
+
+-- Create table: options
+CREATE TABLE options (
+  id SERIAL PRIMARY KEY,
+  theme TEXT,
+  alternative INTEGER,
+  own_textual_data TEXT
+);
+
+-- Insert example tags
+INSERT INTO tags (name) VALUES
+  ('household chore'),
+  ('school'),
+  ('hobby'),
+  ('important'),
+  ('full stack');
+
+-- Insert example tasks
+INSERT INTO tasks (name, tags) VALUES
+  ('feed the cat', '1,4'),
+  ('code', '2,3,4,5');
+
+-- Insert example timestamps
+INSERT INTO timestamps (timestamp, task, type) VALUES
+  ('2024-09-26 16:23:02', 1, 0),
+  ('2024-09-27 00:52:00', 1, 1),
+  ('2024-09-27 19:00:33', 1, 0),
+  ('2024-09-27 19:04:14', 1, 1),
+  ('2024-09-27 20:12:04', 1, 0),
+  ('2024-09-27 21:34:17', 1, 1),
+  ('2024-09-27 21:48:59', 1, 0),
+  ('2024-09-27 13:13:13', 2, 0),
+  ('2024-09-27 14:13:13', 2, 0),
+  ('2024-09-27 19:10:06', 2, 0),
+  ('2024-09-27 19:44:26', 2, 0),
+  ('2024-09-27 21:01:07', 2, 0),
+  ('2024-09-27 21:39:09', 2, 0);
+
+-- Insert default options
+INSERT INTO options (theme, alternative, own_textual_data) VALUES
+  ('default', 0, '');
