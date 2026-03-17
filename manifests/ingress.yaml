@@ -2,11 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: task-tracker-ingress
-  annotations:
-    # For k3s with Traefik (default ingress controller on Pi)
-    # If using nginx ingress controller, change to: kubernetes.io/ingress.class: "nginx"
-    kubernetes.io/ingress.class: "traefik"
 spec:
+  ingressClassName: traefik
   rules:
     - http:
         paths:
