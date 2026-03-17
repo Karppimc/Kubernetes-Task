@@ -11,10 +11,65 @@ env:
   FRONTEND_IMAGE: ghcr.io/karppimc/kubernetes-task/frontend
 
 jobs:
-  # Runs entirely on the Pi - native ARM64, no QEMU needed
+  # ----------------------------------------------------------------
+  # Job 1: Run checks on GitHub-hosted runner (fast, free, parallel)
+  # If either check fails, the deploy job is skipped entirely
+  # ----------------------------------------------------------------
+  test-frontend:
+    name: Lint & Build Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (catches compile errors)
+        run: npm run build
+
+  test-backend:
+    name: Validate Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check for syntax errors
+        run: node --check server.js
+
+  # ----------------------------------------------------------------
+  # Job 2: Build images natively on Pi and deploy
+  # Only runs if both test jobs pass
+  # ----------------------------------------------------------------
   build-and-deploy:
     name: Build & Deploy on Pi
     runs-on: self-hosted
+    needs: [test-frontend, test-backend]
 
     steps:
       - name: Checkout repository
