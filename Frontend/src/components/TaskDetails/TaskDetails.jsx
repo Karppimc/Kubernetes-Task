@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart, LinearScale, CategoryScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import './TaskDetails.css';
@@ -235,7 +235,7 @@ const TaskDetails = () => {
 
       setError(null);
       fetchActivityIntervals();
-    } catch (error) {
+    } catch {
       setError('Failed to save changes');
     }
   };
@@ -246,7 +246,7 @@ const TaskDetails = () => {
       try {
         await fetch(`/api/timestamps/${intervalToDelete.startId}`, { method: 'DELETE' });
         await fetch(`/api/timestamps/${intervalToDelete.stopId}`, { method: 'DELETE' });
-      } catch (error) {
+      } catch {
         setError('Failed to delete interval');
         return;
       }

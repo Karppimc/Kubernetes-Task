@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './TaskList.css';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -9,7 +9,7 @@ const TaskList = () => {
   const [filterTags, setFilterTags] = useState([]);
   const [activeTasks, setActiveTasks] = useState([]);
   const [error, setError] = useState(null);
-  const isMounted = React.useRef(true);
+  const isMounted = useRef(true);
 
   const fetchData = async () => {
     try {
@@ -144,7 +144,7 @@ const TaskList = () => {
   };
 
   const TaskItem = ({ task, index, moveTask }) => {
-    const ref = React.useRef(null);
+    const ref = useRef(null);
     const isActive = activeTasks.includes(task.id);
 
     const [, drop] = useDrop({

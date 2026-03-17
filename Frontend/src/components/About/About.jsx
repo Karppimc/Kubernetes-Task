@@ -1,4 +1,3 @@
-import React from 'react';
 import './About.css'; // Optional: Add custom styles for the About page if needed
 
 const About = () => {
@@ -13,7 +12,7 @@ const About = () => {
         <p><b>Important note for Task Details page: You need to save the changes (Add,Delete,Edit) for them to update to backend</b></p>
         <p>
           This application is designed to track tasks and time spent on them. Using the intuitive UI, you can easily add, edit, and remove tasks.
-          Simply navigate through the menu to explore different features. When you hover over tag numbers, you can see what the tag's name is.
+          Simply navigate through the menu to explore different features. When you hover over tag numbers, you can see what the tag&apos;s name is.
         </p>
 
 
@@ -29,7 +28,7 @@ const About = () => {
         <p>Estimated hours spent on this project: 40</p>
 
         <h3>Most Difficult Feature</h3>
-        <p>The most difficult feature to implement was task/timestamp fetching so that I wouldn't get SQL errors from the database.</p>
+        <p>The most difficult feature to implement was task/timestamp fetching so that I wouldn&apos;t get SQL errors from the database.</p>
       </div>
     </div>
   );
