@@ -1,87 +1,159 @@
-/* General table styling */
+/* TaskDetails.css */
+.details-main {
+  padding: 4px;
+}
+
+.details-main h3 {
+  color: #94a3b8;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.details-task-selector {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
 .details-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 6px;
   margin-top: 15px;
   font-size: 0.9rem;
 }
 
-.details-table th,
+.details-table th {
+  background-color: #0f172a;
+  color: #94a3b8;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #334155;
+}
+
 .details-table td {
-  padding: 10px;
+  background-color: #0f172a;
+  color: #f8fafc;
+  padding: 12px 16px;
+  text-align: center;
+  border-top: 1px solid #1e293b;
+  border-bottom: 1px solid #1e293b;
+}
+
+.details-table td:first-child {
+  border-left: 3px solid #334155;
+  border-radius: 8px 0 0 8px;
   text-align: left;
 }
 
-.details-table th {
-  background-color: #2e2e2e; /* Matching TaskList background */
-  color: #fff;
+.details-table td:last-child {
+  border-radius: 0 8px 8px 0;
 }
 
-.details-table td {
-  background-color: #2e2e2e; /* Matching TaskList background */
-  color: #fff;
-  text-align: center;
+.details-table tr:hover td {
+  background-color: #1e293b;
 }
 
-/* Overlap row styling */
 .details-table .overlap td {
-  background-color: #ffe6e6;
-  border-left: 4px solid #d9534f;
-  color: #333;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+  color: #fca5a5;
 }
 
 /* Button styling */
 button {
-  background-color: #007bff;
+  background-color: #3b82f6;
   color: #fff;
   border: none;
-  border-radius: 5px;
-  padding: 8px 12px;
-  font-size: 1rem;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  background-color: #0056b3; /* Matching TaskList hover effect */
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
 
 button:focus {
-  outline: 2px solid #ffbf00;
+  outline: 2px solid #38bdf8;
   outline-offset: 2px;
 }
 
 button:disabled {
-  background-color: #555;
+  background-color: #334155;
+  color: #64748b;
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.7;
+  transform: none;
 }
 
 /* Input fields styling */
 .new-interval-inputs {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   margin: 20px 0;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .new-interval-inputs label {
-  margin-right: 10px;
-  color: #fff; /* Ensuring label text is visible */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex: 1;
+  min-width: 200px;
 }
 
 input[type="datetime-local"] {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 9px 14px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background-color: #1e293b;
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
 }
 
 input[type="datetime-local"]:focus {
-  outline: 2px solid #ffbf00;
-  outline-offset: 2px;
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
 }
 
-/* Responsive styles for smaller screens */
+/* Bar chart styling */
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+}
+
 @media (max-width: 500px) {
   .details-table th,
   .details-table td {
@@ -92,23 +164,21 @@ input[type="datetime-local"]:focus {
     flex-direction: column;
   }
 
+  .new-interval-inputs label {
+    min-width: unset;
+  }
+
   .details-main {
-    padding: 10px;
+    padding: 0;
   }
 
   input[type="datetime-local"] {
     width: 100%;
+    box-sizing: border-box;
     margin-bottom: 10px;
   }
 
   button {
     width: 100%;
   }
-}
-
-/* Bar chart styling */
-.chart-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
 }

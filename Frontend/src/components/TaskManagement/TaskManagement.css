@@ -1,134 +1,246 @@
 /* TaskManagement.css */
-/* Main padding for the task management content */
 .management-main {
-  padding: 20px;
+  padding: 4px;
 }
-/* Sections for form and task list spacing */
+
 .management-form-section,
 .task-list-section {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
-/* Styles for the management form layout */
+
+.management-form-section h3,
+.task-list-section h3 {
+  color: #94a3b8;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+  margin-top: 0;
+}
+
 .management-form {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   align-items: center;
-
+  background-color: #0f172a;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #334155;
 }
-/* Label styles for the management form */
+
 .management-label {
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8;
   width: 100px;
 }
-/* Input field styling within the form */
+
 .management-input {
   flex: 1;
-  padding: 8px;
+  padding: 9px 14px;
   min-width: 0;
-  margin-top: 10px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
 }
-/* Button styling for management actions */
+
+.management-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.management-input::placeholder {
+  color: #475569;
+}
+
 .management-button {
-  padding: 10px 20px;
+  padding: 9px 20px;
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.2s ease;
   white-space: nowrap;
-  margin-top: 10px;
 }
-/* Hover effect for management buttons */
+
 .management-button:hover {
-  background-color: #0056b3;
+  background-color: #2563eb;
+  transform: translateY(-1px);
 }
-/* Focus outline for accessibility */
+
 .management-button:focus {
-  outline: 2px solid #ffbf00;
+  outline: 2px solid #38bdf8;
   outline-offset: 2px;
 }
-/* Container for displaying tags in the form */
+
+.management-button.danger {
+  background-color: #ef4444;
+}
+
+.management-button.danger:hover {
+  background-color: #dc2626;
+}
+
 .tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
-
 }
-/* Task list container styling */
+
+.tags-container label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tags-container label:hover {
+  border-color: #38bdf8;
+  color: #f8fafc;
+}
+
+.tags-container input[type="checkbox"] {
+  accent-color: #38bdf8;
+}
+
 .management-task-list {
   list-style-type: none;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-/* Styling for each task item in the list */
+
 .management-task-item {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   justify-items: center;
   align-items: center;
-  margin: 10px 0;
-  padding: 15px;
-  background-color: #2e2e2e;
-  border-radius: 8px;
-  color: #fff;
+  padding: 16px 20px;
+  background-color: #0f172a;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  border-left: 3px solid #334155;
+  color: #f8fafc;
+  transition: border-color 0.2s ease;
 }
-/* Align task name to the start of the row */
+
+.management-task-item:hover {
+  border-color: #475569;
+  border-left-color: #38bdf8;
+}
+
 .task-name {
   justify-self: start;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
-/* Container for tags within each task item */
+
 .task-tags {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-/* Button group styling for task actions */
+
+.task-tag-pill {
+  background-color: #1e3a5f;
+  color: #93c5fd;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid #1e4a7f;
+}
+
 .button-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-self: end;
-
 }
-/* Filter section layout and spacing */
+
 .filter-section {
   margin-bottom: 20px;
 }
-/* Layout for tag filter buttons */
+
+.filter-section h3 {
+  color: #94a3b8;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 8px;
 }
-/* Individual filter tag button spacing */
-.filter-tags button {
-  margin-right: 5px;
+
+.tag-button {
+  background-color: #0f172a;
+  color: #93c5fd;
+  border: 1px solid #1e3a5f;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
-/* Styling for selected filter tags */
+
+.tag-button:hover {
+  background-color: #1e3a5f;
+  border-color: #38bdf8;
+  color: #e0f2fe;
+}
+
 .tag-button.selected {
-  background-color: #0056b3;
-  color: white;
+  background-color: #1e3a5f;
+  border-color: #38bdf8;
+  color: #38bdf8;
 }
-/* Focus outline for tag buttons for accessibility */
+
 .tag-button:focus {
-  outline: 2px solid #ffbf00;
+  outline: 2px solid #38bdf8;
   outline-offset: 2px;
 }
 
-/* Responsive styles for screens smaller than 500px */
 @media (max-width: 500px) {
   .management-form {
     flex-direction: column;
     align-items: stretch;
   }
-  /* Allow labels to resize */
+
   .management-label {
     width: auto;
   }
 
   .management-input {
     width: 100%;
+    box-sizing: border-box;
   }
 
   .tags-container {
@@ -140,19 +252,18 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
   }
 
   .task-tags {
-    margin-top: 10px;
     flex-wrap: wrap;
   }
 
   .button-group {
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
-    margin-top: 10px;
   }
-  /* Adjust button padding on smaller screens */
+
   .management-button {
     padding: 8px 15px;
   }
