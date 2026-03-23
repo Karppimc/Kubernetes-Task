@@ -26,7 +26,7 @@ graph TD
 
     subgraph pi ["Raspberry Pi 5 — k3s Kubernetes Cluster"]
 
-        subgraph default ["Namespace: default"]
+        subgraph ns_default ["Namespace: default"]
             Ingress["Traefik Ingress\nport 80\nRoutes traffic by URL path"]
 
             subgraph frontend_group ["Frontend"]
@@ -51,7 +51,7 @@ graph TD
             SEC["Secret\npostgres-secret\n(credentials)"]
         end
 
-        subgraph monitoring ["Namespace: monitoring"]
+        subgraph ns_monitoring ["Namespace: monitoring"]
             PROM["Prometheus\nMetrics collection"]
             GRAF["Grafana\nNodePort :32000\nDashboards"]
             KSM["kube-state-metrics\nCluster metrics"]
