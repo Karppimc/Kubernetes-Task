@@ -95,70 +95,121 @@ This means the browser only needs to talk to one host — nginx handles routing.
 
 ### Images
 
-Images are built natively on the Raspberry Pi 5 (ARM64 architecture) and pushed to
-GitHub Container Registry (ghcr.io):
+Images are built on the development machine (Windows x86_64) using Docker Buildx with
+cross-compilation targeting `linux/arm64`, then pushed to GitHub Container Registry (ghcr.io):
+
+```bash
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/backend:latest --push ./Backend
+
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/frontend:latest --push ./Frontend
+```
 
 ```
 ghcr.io/karppimc/kubernetes-task/backend:latest
 ghcr.io/karppimc/kubernetes-task/frontend:latest
 ```
 
-Building natively on ARM64 avoids slow QEMU cross-compilation that would be needed
-if building on a standard x86 machine.
+Docker Buildx uses QEMU emulation to cross-compile ARM64 images on an x86 host. The backend
+build completes in ~33 seconds. The frontend takes ~77 seconds due to the `npm ci` step running
+under emulation. The Pi nodes pull the final ARM64 images directly from ghcr.io at deploy time.
 
 ---
 
-## 4. Step 3 — Kubernetes on Raspberry Pi 5 (k3s)
+## 4. Step 3 — Kubernetes Cluster on Raspberry Pi 5 (k3s)
 
 ### Infrastructure
 
-- **Hardware**: Raspberry Pi 5
-- **OS**: Raspberry Pi OS (64-bit, Debian-based)
+The cluster consists of two Raspberry Pi 5 nodes:
+
+| Node | IP | Role | Workloads |
+|---|---|---|---|
+| `kubepi` | 192.168.1.196 | Control plane | PostgreSQL (StatefulSet) |
+| `kubepi2` | 192.168.1.46 | Worker | Backend, Frontend |
+
+- **Hardware**: 2× Raspberry Pi 5 (ARM64, 8 GiB RAM each)
+- **OS**: Raspberry Pi OS 64-bit (Debian-based)
 - **Kubernetes distribution**: k3s — a lightweight, single-binary Kubernetes designed for
   edge computing, IoT, and resource-constrained environments
 - **Container runtime**: containerd (built into k3s)
 - **Ingress controller**: Traefik (built into k3s)
 
-### Pi Setup Notes
+### Node Setup
 
 k3s requires cgroup memory support, which is not enabled by default on Raspberry Pi OS.
-Fix applied to `/boot/firmware/cmdline.txt`:
+Required fix on **both nodes** before installing k3s — applied to `/boot/firmware/cmdline.txt`:
 
 ```
 cgroup_memory=1 cgroup_enable=memory
 ```
 
-Without this, k3s fails with: `failed to find memory cgroup (v2)`
+Without this, k3s fails to start with: `failed to find memory cgroup (v2)`
+
+**Control plane (kubepi):** k3s server installed normally:
+```bash
+curl -sfL https://get.k3s.io | sh -
+```
+
+**Worker node (kubepi2):** k3s agent joined to the cluster using a node token from the control plane:
+```bash
+curl -sfL https://get.k3s.io | \
+  K3S_URL=https://192.168.1.196:6443 \
+  K3S_TOKEN=<node-token> sh -
+```
+
+### Node Scheduling — Node Selectors
+
+Workloads are pinned to specific nodes using `nodeSelector` in each manifest.
+This demonstrates intentional workload placement — a key Kubernetes concept:
+
+```yaml
+# Database stays on control plane node (stable, persistent)
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: kubepi
+
+# Application pods run on the worker node
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: kubepi2
+```
+
+Result verified with `kubectl get pods -o wide`:
+```
+NAME                       NODE
+backend-79664b5565-sh68c   kubepi2
+frontend-f44ff6c45-jks4f   kubepi2
+postgres-0                 kubepi
+```
 
 ### Kubernetes Architecture
 
 ```
-Internet / Local Network
-        │
-        ▼
-  Traefik Ingress (port 80)
-  192.168.1.196
-        │
-        ├── /api  ──────────► backend Service (ClusterIP :3010)
-        │                            │
-        │                            ▼
-        │                     backend Deployment
-        │                     (1-5 pods, HPA managed)
-        │                            │
-        │                            ▼
-        │                     postgres Service (ClusterIP :5432)
-        │                            │
-        │                            ▼
-        │                     postgres StatefulSet (1 pod)
-        │                            │
-        │                            ▼
-        │                     PersistentVolumeClaim (1Gi)
-        │
-        └── /     ──────────► frontend Service (NodePort :80)
-                                      │
-                                      ▼
-                               frontend Deployment
-                               (1 pod, nginx)
+Local Network
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  kubepi (192.168.1.196) — Control Plane                         │
+│                                                                  │
+│  Traefik Ingress (:80)                                           │
+│       ├── /api ──► backend Service (ClusterIP :3010) ──────────►│──┐
+│       └── /    ──► frontend Service (NodePort :80)  ──────────►│──┤
+│                                                                  │  │
+│  postgres Service (ClusterIP :5432)                              │  │
+│       └── postgres StatefulSet (pod)                            │  │
+│              └── PersistentVolumeClaim (1Gi)                    │  │
+└─────────────────────────────────────────────────────────────────┘  │
+                                                                      │
+┌─────────────────────────────────────────────────────────────────┐  │
+│  kubepi2 (192.168.1.46) — Worker Node                           │◄─┘
+│                                                                  │
+│  backend Deployment (1–5 pods, HPA managed)                     │
+│       └── pulls image: ghcr.io/.../backend:latest               │
+│                                                                  │
+│  frontend Deployment (1 pod, nginx)                             │
+│       └── pulls image: ghcr.io/.../frontend:latest              │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Kubernetes Components Explained
@@ -169,12 +220,13 @@ Internet / Local Network
 | `StatefulSet` | postgres | Stable network identity and persistent storage for the database |
 | `PersistentVolumeClaim` | postgres-pvc | Reserves 1Gi of disk — data survives pod restarts |
 | `Service` (ClusterIP) | backend, postgres | Internal DNS-based routing between pods |
-| `Service` (NodePort) | frontend | Exposes the app on port 30080 externally |
+| `Service` (NodePort) | frontend | Exposes the app externally |
 | `Ingress` | task-tracker-ingress | Single entry point; routes `/api` to backend, `/` to frontend |
 | `ConfigMap` | backend-config, postgres-init | Non-sensitive configuration (DB host, port, init SQL) |
-| `Secret` | postgres-secret | Database credentials stored as base64-encoded Kubernetes secret |
+| `Secret` | postgres-secret | Database credentials — never stored in source code or git |
 | `HorizontalPodAutoscaler` | backend-hpa | Scales backend pods (1–5) based on CPU utilization (target: 50%) |
 | `metrics-server` | kube-system | Provides CPU/RAM metrics to the HPA controller |
+| `nodeSelector` | all workloads | Pins each workload to the correct node |
 
 ### Secrets Handling
 
@@ -229,28 +281,37 @@ http://192.168.1.196:32000
 
 ## 6. Deployment Workflow
 
-Since the repository is public and self-hosted GitHub Actions runners pose a security risk
-with public repos, a simple manual workflow is used:
+GitHub Actions CI/CD with a self-hosted runner was initially planned but abandoned —
+self-hosted runners on public repositories are a security risk (forks can run arbitrary
+code on the runner). A manual workflow is used instead:
 
-**On development machine (code changes):**
+**If application code changed — build on development machine:**
+```bash
+# Cross-compile for ARM64 and push to registry
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/backend:latest --push ./Backend
+
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/frontend:latest --push ./Frontend
+```
+
+**Push manifest/config changes:**
 ```bash
 git add .
 git commit -m "description"
 git push
 ```
 
-**On Raspberry Pi (deploy):**
+**Apply on the cluster (Pi 1):**
 ```bash
-cd ~/Kubernetes-Task
-git pull
+cd ~/Kubernetes-Task && git pull
 
-# If frontend/backend code changed, rebuild and push the image:
-docker build -t ghcr.io/karppimc/kubernetes-task/frontend:latest ./Frontend
-docker push ghcr.io/karppimc/kubernetes-task/frontend:latest
-kubectl rollout restart deployment/frontend
+# Restart deployments to pull new images
+kubectl rollout restart deployment/backend deployment/frontend
 
-# If only Kubernetes manifests changed:
-kubectl apply -f manifests/
+# Or apply updated manifests
+kubectl apply -f Backend/manifests/
+kubectl apply -f Frontend/manifests/
 ```
 
 ---
@@ -259,20 +320,23 @@ kubectl apply -f manifests/
 
 | Challenge | Root Cause | Solution |
 |---|---|---|
-| k3s failed to start | cgroup memory not enabled in Pi OS boot config | Added `cgroup_memory=1 cgroup_enable=memory` to `/boot/firmware/cmdline.txt` |
-| GitHub Actions build took 30+ minutes | QEMU emulation for ARM64 cross-compilation | Built Docker images natively on the Pi instead |
-| CI/CD abandoned | Self-hosted runners are a security risk on public repos | Manual deploy workflow via git pull + docker build |
-| Backend couldn't connect to database | PostgreSQL Service manifest was not applied | Applied `Database/manifests/service.yaml` |
-| kubectl using system config instead of user config | k3s sets `/etc/rancher/k3s/k3s.yaml` as default | Set `KUBECONFIG=~/.kube/config` in `.bashrc` |
+| k3s failed to start on both nodes | cgroup memory not enabled in Pi OS boot config | Added `cgroup_memory=1 cgroup_enable=memory` to `/boot/firmware/cmdline.txt` on each Pi before installing k3s |
+| GitHub Actions build took 30+ minutes | QEMU emulation for ARM64 cross-compilation on hosted runners | Switched to Docker Buildx on development machine — cross-compiles in ~33–77 seconds |
+| CI/CD abandoned | Self-hosted runners are a security risk on public GitHub repositories | Manual deploy workflow: build locally, push to ghcr.io, apply on cluster |
+| Backend couldn't connect to database after initial deploy | PostgreSQL Service manifest was accidentally skipped during apply | Applied `Database/manifests/service.yaml` — backend could then resolve `postgres` hostname via cluster DNS |
+| kubectl using system config instead of user config | k3s sets `/etc/rancher/k3s/k3s.yaml` as default, requires root | Set `KUBECONFIG=~/.kube/config` in `.bashrc`, copied config with correct ownership |
+| Worker node SSH access | SSH key not configured on Pi 2, Windows username mismatch | Used `ssh-copy-id`, added `User karppi` to `~/.ssh/config` |
 
 ---
 
 ## 8. Key Kubernetes Concepts Demonstrated
 
+- **Multi-node cluster**: Two physical nodes (control plane + worker) with workloads distributed across them
+- **Node scheduling**: `nodeSelector` pins specific workloads to specific nodes — stateful DB on control plane, stateless app on worker
 - **Self-healing**: Kubernetes automatically restarts crashed pods (Deployment controller)
 - **Horizontal scaling**: HPA scales backend pods 1→5 based on CPU load
 - **Persistent storage**: PostgreSQL data survives pod restarts via PersistentVolumeClaim
-- **Service discovery**: Pods communicate by service name (e.g. `postgres`, `backend`) via cluster DNS
+- **Service discovery**: Pods communicate by service name (e.g. `postgres`, `backend`) via cluster DNS — works across nodes transparently
 - **Configuration separation**: App config in ConfigMaps, secrets in Secrets — nothing hardcoded
 - **Rolling updates**: `kubectl rollout restart` updates pods one at a time with zero downtime
 - **Namespace isolation**: Monitoring stack in `monitoring` namespace, app in `default`
