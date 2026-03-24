@@ -13,6 +13,8 @@ spec:
       labels:
         app: postgres
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kubepi
       containers:
         - name: postgres
           image: postgres:16

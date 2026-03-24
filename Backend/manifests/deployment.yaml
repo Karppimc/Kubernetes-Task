@@ -12,6 +12,8 @@ spec:
       labels:
         app: backend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kubepi2
       containers:
         - name: backend
           # Updated by GitHub Actions on each push to main

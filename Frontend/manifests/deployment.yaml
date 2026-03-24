@@ -12,6 +12,8 @@ spec:
       labels:
         app: frontend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: kubepi2
       containers:
         - name: frontend
           # Updated by GitHub Actions on each push to main
