@@ -1,20 +1,6 @@
 # Architecture
 
-## Context
 
-> Who uses the system and how it fits into the world.
-
-```mermaid
-graph TD
-    User["👤 User\n(Browser)"]
-    System["Task Tracker\nRunning on Raspberry Pi 5\nvia k3s Kubernetes"]
-    GHCR["GitHub Container Registry\nghcr.io\n(Docker images)"]
-
-    User -->|"HTTP requests\n192.168.1.196"| System
-    GHCR -->|"Image pulls\non deploy"| System
-```
-
----
 
 ## Container
 
@@ -88,87 +74,7 @@ graph TD
 
 ---
 
-## Component
 
-> What is inside each container.
-
-### Frontend (React + nginx)
-
-```mermaid
-graph TD
-    subgraph nginx ["nginx:alpine"]
-        subgraph react ["React SPA (compiled)"]
-            App["App.jsx\nRouter"]
-            TL["TaskList\nView & filter tasks\nDrag & Drop ordering"]
-            TM["TaskManagement\nAdd / edit / delete tasks\nManage tags"]
-            TS["TimeSummary\nTime spent per task & tag\nCustom date range"]
-            TD["TaskDetails\nActivity intervals\nBar chart (daily usage)\nEdit intervals"]
-            AB["About\nProject info"]
-        end
-        Proxy["nginx proxy\n/api/ → backend:3010"]
-    end
-
-    App --> TL
-    App --> TM
-    App --> TS
-    App --> TD
-    App --> AB
-    TL -->|"fetch /api/tasks"| Proxy
-    TM -->|"fetch /api/tasks\n/api/tags"| Proxy
-    TS -->|"fetch /api/tasks\n/api/intervals"| Proxy
-    TD -->|"fetch /api/intervals"| Proxy
-```
-
-### Backend (Express.js)
-
-```mermaid
-graph TD
-    subgraph node ["node:20-alpine"]
-        subgraph express ["Express.js server.js"]
-            Router["Router\nport 3010"]
-            RT["GET  /api/tasks\nPOST /api/tasks\nPUT  /api/tasks/:id\nDEL  /api/tasks/:id"]
-            RI["GET  /api/intervals\nPOST /api/intervals\nPUT  /api/intervals/:id\nDEL  /api/intervals/:id"]
-            RTG["GET  /api/tags\nPOST /api/tags"]
-            PG["pg client\nConnection pool"]
-        end
-    end
-
-    Router --> RT --> PG
-    Router --> RI --> PG
-    Router --> RTG --> PG
-    PG -->|"TCP :5432"| DB[("PostgreSQL")]
-```
-
-### Database (PostgreSQL)
-
-```mermaid
-erDiagram
-    tasks {
-        serial id PK
-        text name
-        timestamptz created_at
-    }
-    tags {
-        serial id PK
-        text name
-    }
-    task_tags {
-        int task_id FK
-        int tag_id FK
-    }
-    intervals {
-        serial id PK
-        int task_id FK
-        timestamptz start_time
-        timestamptz end_time
-    }
-
-    tasks ||--o{ task_tags : "has"
-    tags  ||--o{ task_tags : "assigned to"
-    tasks ||--o{ intervals : "has"
-```
-
----
 
 ## Kubernetes Resource Summary
 
