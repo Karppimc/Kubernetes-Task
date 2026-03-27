@@ -18,67 +18,72 @@ graph TD
 
 ## Container
 
-> The Kubernetes workloads and services inside the cluster.
+> The Kubernetes workloads and services inside the cluster, distributed across two nodes.
 
 ```mermaid
 graph TD
     User["👤 User\n(Browser)"]
+    GHCR["GitHub Container Registry\nghcr.io"]
 
-    subgraph pi ["Raspberry Pi 5 — k3s Kubernetes Cluster"]
+    subgraph cluster["k3s Kubernetes Cluster"]
 
-        subgraph ns_default ["Namespace: default"]
-            Ingress["Traefik Ingress\nport 80\nRoutes traffic by URL path"]
+        subgraph node1["kubepi — Control Plane (192.168.1.196)"]
 
-            subgraph frontend_group ["Frontend"]
-                FE["Frontend Pod\nnginx:alpine\nServes React SPA"]
-                FE_SVC["Service\nNodePort :30080"]
+            Ingress["Traefik Ingress :80\nRoutes traffic by URL path"]
+
+            subgraph db_group["PostgreSQL"]
+                DB["StatefulSet\npostgres:16"]
+                DB_SVC["Service ClusterIP :5432"]
+                PVC["PersistentVolumeClaim 1Gi"]
+                CM_DB["ConfigMap: init.sql"]
+                SEC["Secret: credentials"]
             end
 
-            subgraph backend_group ["Backend"]
-                BE["Backend Pod\nnode:20-alpine\nExpress.js REST API"]
-                BE_SVC["Service\nClusterIP :3010"]
-                HPA["HorizontalPodAutoscaler\n1–5 replicas\nCPU target: 50%"]
+            subgraph ns_monitoring["Monitoring namespace"]
+                PROM["Prometheus\nMetrics scraper"]
+                GRAF["Grafana NodePort :32000"]
+                KSM["kube-state-metrics"]
+                NE["node-exporter"]
             end
 
-            subgraph db_group ["Database"]
-                DB["PostgreSQL Pod\npostgres:16\nStatefulSet"]
-                DB_SVC["Service\nClusterIP :5432"]
-                PVC["PersistentVolumeClaim\n1Gi storage"]
-            end
-
-            CM_BE["ConfigMap\nbackend-config"]
-            CM_DB["ConfigMap\npostgres-init\n(init.sql)"]
-            SEC["Secret\npostgres-secret\n(credentials)"]
         end
 
-        subgraph ns_monitoring ["Namespace: monitoring"]
-            PROM["Prometheus\nMetrics collection"]
-            GRAF["Grafana\nNodePort :32000\nDashboards"]
-            KSM["kube-state-metrics\nCluster metrics"]
-            NE["node-exporter\nHost metrics (Pi)"]
+        subgraph node2["kubepi2 — Worker (192.168.1.46)"]
+
+            subgraph back_group["Backend"]
+                BE["Deployment\nnode:20-alpine\n1–5 pods"]
+                BE_SVC["Service ClusterIP :3010"]
+                HPA["HorizontalPodAutoscaler\nCPU target 50%"]
+                CM_BE["ConfigMap: backend-config"]
+            end
+
+            subgraph front_group["Frontend"]
+                FE["Deployment\nnginx:alpine\n1 pod"]
+                FE_SVC["Service NodePort :80"]
+            end
+
         end
 
     end
 
-    User -->|"HTTP :80"| Ingress
-    Ingress -->|"path: /"| FE_SVC --> FE
+    User -->|":80"| Ingress
+    User -->|":32000"| GRAF
+    GHCR -->|"image pull"| BE
+    GHCR -->|"image pull"| FE
     Ingress -->|"path: /api"| BE_SVC --> BE
-    BE --> DB_SVC --> DB
-    DB --> PVC
+    Ingress -->|"path: /"| FE_SVC --> FE
+    BE -->|"postgres:5432"| DB_SVC --> DB --> PVC
     HPA -.->|"scales"| BE
     CM_BE -.->|"env config"| BE
     CM_DB -.->|"init script"| DB
     SEC -.->|"credentials"| BE
     SEC -.->|"credentials"| DB
-
-    PROM -->|"scrapes metrics"| BE
-    PROM -->|"scrapes metrics"| FE
-    PROM -->|"scrapes metrics"| DB
-    KSM -->|"cluster metrics"| PROM
-    NE -->|"host metrics"| PROM
+    PROM -->|"scrapes"| BE
+    PROM -->|"scrapes"| FE
+    PROM -->|"scrapes"| DB
+    KSM --> PROM
+    NE --> PROM
     PROM --> GRAF
-
-    User -->|"HTTP :32000"| GRAF
 ```
 
 ---
