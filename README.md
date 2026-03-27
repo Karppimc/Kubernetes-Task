@@ -1,57 +1,88 @@
-# Task Tracker
+# Task Tracker — Kubernetes Edition
 
-This project is a **Task Tracker** web application that allows users to manage tasks and their associated time intervals effectively.
-- Frontend is done with React
-- Backend was provided by our teacher, added here for reference. Express, sqlite
+A **Task Tracker** web application deployed on a 2-node Kubernetes cluster running on Raspberry Pi 5 hardware. Originally a traditional fullstack project, migrated to a fully containerized Kubernetes environment as part of a thesis project.
+
+## Stack
+
+- **Frontend**: React + Vite, served via nginx
+- **Backend**: Express.js (Node.js)
+- **Database**: PostgreSQL 16
+- **Orchestration**: Kubernetes (k3s)
+- **Monitoring**: Prometheus + Grafana
+
+## Cluster
+
+| Node | Role | Workloads |
+|---|---|---|
+| `kubepi` (192.168.1.196) | Control Plane | PostgreSQL, Monitoring |
+| `kubepi2` (192.168.1.46) | Worker | Frontend, Backend |
 
 ## Features
 
 ### Task List
 - Start/Stop/Delete tasks
-- Filter task with tags
-- Drag & Drop tasks to put them in any order you want
+- Filter tasks with tags
+- Drag & Drop ordering
   ![image](https://github.com/user-attachments/assets/9082ee28-1529-4f47-bde9-ea0163a76401)
 
-  
-
 ### Task Management
-  - View a list of tasks fetched from the backend.
-  - Add Tasks and give it tags that describe it
-  - Add new Tags
-  - Edit/Delete existing tasks
-  - Filter tasks with tags
-    ![image](https://github.com/user-attachments/assets/d9f19f7b-c03d-4b43-ab7d-6ae616a91fba)
-
+- Add tasks with tags
+- Edit/Delete existing tasks
+- Filter tasks with tags
+  ![image](https://github.com/user-attachments/assets/d9f19f7b-c03d-4b43-ab7d-6ae616a91fba)
 
 ### Time Summary
-- Shows summary for time spent in each Task and Tag (Hours and minutes)
-- You can specify time interval
+- Time spent per task and tag
+- Custom date range filter
   ![image](https://github.com/user-attachments/assets/a85e52a7-fc2e-43dd-bc2a-c6c0400305e6)
 
- 
 ### Task Details
-  - Display activity intervals (start and stop times) for the selected task.
-  - Highlight overlapping intervals for better visibility.
-  - Support for ongoing tasks with `Ongoing` label in the stop time column.
-  - Set custom start and end times to filter activity intervals.
-  - Add,edit and delete time intervals. Save changes to update changes to backend
-  - Daily active times shown in bar chart that tells how many hours/minutes you have used in this task each day
-    ![image](https://github.com/user-attachments/assets/c6837fed-c72e-4153-b926-6b1a8fc7aa52)
-    ![image](https://github.com/user-attachments/assets/ac69c70c-ed99-40f4-a56e-cf61fffd10a6)
+- View and edit activity intervals
+- Highlight overlapping intervals
+- Daily active time bar chart
+  ![image](https://github.com/user-attachments/assets/c6837fed-c72e-4153-b926-6b1a8fc7aa52)
 
-### About page
-- Shows more info about this project
+## Kubernetes Resources
 
+| Resource | Purpose |
+|---|---|
+| Deployment (frontend, backend) | Pod lifecycle, rolling updates, self-healing |
+| StatefulSet (postgres) | Stable identity and persistent storage for database |
+| PersistentVolumeClaim (1Gi) | Database storage that survives pod restarts |
+| HorizontalPodAutoscaler | Scales backend 1–5 pods at 50% CPU threshold |
+| Ingress (Traefik) | Routes `/api` → backend, `/` → frontend |
+| ConfigMap | Non-sensitive configuration |
+| Secret | Database credentials (gitignored) |
 
-- **Error Handling**
-  - Provides meaningful error messages when tasks or intervals fail to load.
+## Deployment
 
-### Installation
+**Build and push images** (from development machine):
+```bash
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/backend:latest --push ./Backend
 
-1. Clone the repository.
-2. Navigate to the project directory: cd Task-Tracker
-3. npm install both front & Back end
-4. npm run dev @ Front
-5. npm run start @ Back
-6. Open localhost:5173 to check the page
+docker buildx build --platform linux/arm64 \
+  -t ghcr.io/karppimc/kubernetes-task/frontend:latest --push ./Frontend
+```
 
+**Apply manifests** (on kubepi):
+```bash
+kubectl apply -f Database/manifests/
+kubectl apply -f Backend/manifests/
+kubectl apply -f Frontend/manifests/
+kubectl apply -f manifests/
+```
+
+**Secrets** — copy the template and fill in credentials:
+```bash
+cp Database/manifests/secret.example.yaml Database/manifests/secret.yaml
+```
+
+## Monitoring
+
+Grafana available at `http://192.168.1.196:32000`
+
+Key dashboards:
+- Kubernetes / Compute Resources / Namespace (Pods)
+- Kubernetes / Compute Resources / Node (Pods)
+- Node Exporter / Nodes
