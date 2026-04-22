@@ -1,0 +1,44 @@
+backend:
+  image: ghcr.io/karppimc/kubernetes-task/backend
+  tag: latest
+  port: 3010
+  nodeSelector:
+    kubernetes.io/hostname: kubepi2
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+
+frontend:
+  image: ghcr.io/karppimc/kubernetes-task/frontend
+  tag: latest
+  port: 80
+  nodePort: 30080
+  nodeSelector:
+    kubernetes.io/hostname: kubepi2
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+
+database:
+  image: postgres
+  tag: "16"
+  port: 5432
+  storage: 1Gi
+  nodeSelector:
+    kubernetes.io/hostname: kubepi
+  secretName: postgres-secret
+
+ingress:
+  ingressClassName: traefik
