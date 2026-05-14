@@ -1,4 +1,5 @@
 # Task Tracker — Kubernetes Edition
+This project was done as part of thesis. Thesis grade 4/5, you can read thesis here: https://urn.fi/URN:NBN:fi:amk-202605069791
 
 A **Task Tracker** web application deployed on a 2-node Kubernetes cluster running on Raspberry Pi 5 hardware. Originally a traditional fullstack project, migrated to a fully containerized Kubernetes environment as part of a thesis project.
 
